@@ -9,6 +9,7 @@ public class Contacto {
     private String apellidos;
     private Telefono num_tlf;
     private String correo;
+    private String direccion;
 
     public Contacto(String nombre, Telefono num_tlf) {
         this.nombre = nombre;
@@ -52,5 +53,13 @@ public class Contacto {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 }
