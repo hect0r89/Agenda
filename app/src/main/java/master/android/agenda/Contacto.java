@@ -16,11 +16,12 @@ public class Contacto {
         this.num_tlf = num_tlf;
     }
 
-    public Contacto(String nombre, String apellidos, Telefono num_tlf, String correo) {
+    public Contacto(String nombre, String apellidos, Telefono num_tlf, String correo, String direccion) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.num_tlf = num_tlf;
         this.correo = correo;
+        this.direccion = direccion;
     }
 
     public String getNombre() {
