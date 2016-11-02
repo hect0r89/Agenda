@@ -3,9 +3,8 @@ package master.android.agenda;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,12 +14,7 @@ import android.widget.Spinner;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class CreateActivity extends AppCompatActivity {
 
@@ -79,7 +73,7 @@ public class CreateActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("filename",filename);
+                returnIntent.putExtra("contacto",contacto);
                 setResult(Activity.RESULT_OK,returnIntent);
                 finish();
 

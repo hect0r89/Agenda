@@ -106,25 +106,27 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == CREATE_CONTACT) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                String filename = data.getStringExtra("filename");
-                BufferedReader input = null;
-                File file = null;
-                Gson gson = new Gson();
-                try {
-                    file = new File(getFilesDir(), filename); // Pass getFilesDir() and "MyFile" to read file
-
-                    input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-                    String line;
-                    StringBuffer buffer = new StringBuffer();
-                    while ((line = input.readLine()) != null) {
-                        buffer.append(line);
-                    }
-
-                    datos.add(gson.fromJson(buffer.toString(), Contacto.class));
-                    adaptador.notifyDataSetChanged();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Contacto c = data.getExtras().getParcelable("contacto");
+                Log.d("sd","sad");
+//                String filename = data.getStringExtra("filename");
+//                BufferedReader input = null;
+//                File file = null;
+//                Gson gson = new Gson();
+//                try {
+//                    file = new File(getFilesDir(), filename); // Pass getFilesDir() and "MyFile" to read file
+//
+//                    input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+//                    String line;
+//                    StringBuffer buffer = new StringBuffer();
+//                    while ((line = input.readLine()) != null) {
+//                        buffer.append(line);
+//                    }
+//
+//                    datos.add(gson.fromJson(buffer.toString(), Contacto.class));
+//                    adaptador.notifyDataSetChanged();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }
