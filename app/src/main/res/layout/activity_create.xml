@@ -97,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Teléfono"
-                    android:inputType="number" />
+                    android:inputType="phone" />
             </android.support.design.widget.TextInputLayout>
 
             <Spinner
@@ -132,6 +132,7 @@
                     android:id="@+id/etCorreo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
                     android:hint="Correo" />
             </android.support.design.widget.TextInputLayout>
 
