@@ -119,7 +119,6 @@
         <item name="orange_500" type="color">#ff9800</item>
         <item name="deep_orange_500" type="color">#ff5722</item>
         <item name="brown_500" type="color">#795548</item>
-        <item name="grey_500" type="color">#9e9e9e</item>
         <item name="blue_grey_500" type="color">#607d8b</item>
     </array>
     <array name="mdcolor_600">

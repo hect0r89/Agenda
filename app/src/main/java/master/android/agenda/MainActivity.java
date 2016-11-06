@@ -1,30 +1,24 @@
 package master.android.agenda;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 
@@ -36,8 +30,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+
+import static master.android.agenda.Utils.getMatColor;
+import static master.android.agenda.Utils.validateContacto;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Contacto> datos;
     private ContactoAdapter adaptador;
 
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -58,12 +60,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         datos = readData();
-       
+
 
         recView = (RecyclerView) findViewById(R.id.RecView);
         recView.setHasFixedSize(true);
 
-        adaptador = new ContactoAdapter(orderData(datos), MainActivity.this);
+        adaptador = new ContactoAdapter(orderData(datos), this);
 
         recView.setAdapter(adaptador);
         recView.setAdapter(adaptador);
@@ -140,36 +142,48 @@ public class MainActivity extends AppCompatActivity {
                 importFromExternal();
                 return true;
             case R.id.action_generate:
-                Log.i("ActionBar", "Settings!");;
+                generateData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+
     private void importFromExternal() {
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/contactsAgenda");
-        if(myDir.listFiles() != null){
-            for (File f : myDir.listFiles()) {
-                if (f.isFile() && f.getName().endsWith(".json")) {
-                    try {
-                        copyFile(f,new File(getFilesDir(), f.getName()));
-                        datos.clear();
-                        datos.addAll(readData());
-                        orderData(datos);
-                        adaptador.notifyDataSetChanged();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        BufferedReader input = null;
+        File file = null;
+        Gson gson = new Gson();
+        StringBuffer buffer = null;
+
+        if (myDir.listFiles() != null) {
+            try {
+                file = new File(myDir.getAbsolutePath(), "contacts.json");
+
+                input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+                String line;
+                buffer = new StringBuffer();
+
+                while ((line = input.readLine()) != null) {
+                    buffer.append(line);
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            new AlertDialog.Builder(this).setTitle("Información").setMessage("Contactos importados correctamente").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            }).show();
-        }else{
+
+            Contacto[] contactos = gson.fromJson(buffer.toString(), Contacto[].class);
+            datos.clear();
+            saveData(new ArrayList<>(Arrays.asList(contactos)));
+            datos.addAll(readData());
+            orderData(datos);
+            adaptador.notifyDataSetChanged();
+
+            CoordinatorLayout coord = (CoordinatorLayout) findViewById(R.id.activity_main);
+            Snackbar.make(coord, "Contactos importados correctamente", Snackbar.LENGTH_LONG)
+                    .show();
+        } else {
             new AlertDialog.Builder(this).setTitle("Error").setMessage("No se han encontrado contactos para importar").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
@@ -179,29 +193,83 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void saveData(ArrayList<Contacto> datos) {
+        for (Contacto contacto : datos) {
+            String filename = contacto.getUuid();
+
+            String errors = validateContacto(contacto);
+            if (errors.isEmpty()) {
+                Gson gson = new Gson();
+                String json = gson.toJson(contacto);
+                FileOutputStream outputStream;
+
+                try {
+                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(json.getBytes());
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                new AlertDialog.Builder(this).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).show();
+            }
+        }
+
+    }
+
     private void exportToExternal() {
-        if(isExternalStorageWritable()){
+        if (isExternalStorageWritable()) {
             String root = Environment.getExternalStorageDirectory().toString();
             File myDir = new File(root + "/contactsAgenda");
-            if(!myDir.mkdirs()){
+            if (!myDir.mkdirs()) {
                 Log.e("CREAR DIRECTORIO", "Directory not created");
             }
 
-            for (File f : getFilesDir().listFiles()) {
-                if (f.isFile() && f.getName().endsWith(".json")) {
-                    try {
-                        copyFile(f,new File(myDir, f.getName()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            File file = new File(myDir, "contacts.json");
+            FileOutputStream outputStream = null;
+            Gson gson = new Gson();
+            try {
+                outputStream = new FileOutputStream(file);
+                outputStream.write("[".getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int cont = 0;
+            for (Contacto c : datos) {
+
+                String json = gson.toJson(c);
+                try {
+                    if (outputStream != null) {
+                        outputStream.write(json.getBytes());
+                        if (cont < datos.size() - 1) {
+                            outputStream.write(",".getBytes());
+                        }
+
                     }
+                    cont++;
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            new AlertDialog.Builder(this).setTitle("Información").setMessage("Contactos exportados correctamente").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
+            try {
+                if (outputStream != null) {
+                    outputStream.write("]".getBytes());
+                    outputStream.close();
                 }
-            }).show();
-        }else{
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            CoordinatorLayout coord = (CoordinatorLayout) findViewById(R.id.activity_main);
+            Snackbar.make(coord, "Contactos exportados correctamente", Snackbar.LENGTH_LONG)
+                    .show();
+        } else {
             new AlertDialog.Builder(this).setTitle("Error").setMessage("Error al exportar contactos").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
@@ -221,13 +289,13 @@ public class MainActivity extends AppCompatActivity {
                 orderData(datos);
                 adaptador.notifyDataSetChanged();
             }
-        }else if (requestCode == EDIT_CONTACT) {
+        } else if (requestCode == EDIT_CONTACT) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
-                for(Contacto c : datos){
-                    if(c.getUuid().equals(contacto != null ? contacto.getUuid() : null)){
+                for (Contacto c : datos) {
+                    if (c.getUuid().equals(contacto != null ? contacto.getUuid() : null)) {
                         index = datos.indexOf(c);
 
                     }
@@ -237,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
                 orderData(datos);
                 adaptador.notifyDataSetChanged();
             }
-        }else if (requestCode == DETAIL_CONTACT) {
+        } else if (requestCode == DETAIL_CONTACT) {
             if (resultCode == RESULT_OK) {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
@@ -248,11 +316,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 datos.remove(index);
                 adaptador.notifyDataSetChanged();
-                new AlertDialog.Builder(this).setTitle("Información").setMessage("Contacto eliminado correctamente").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).show();
+                CoordinatorLayout coord = (CoordinatorLayout) findViewById(R.id.activity_main);
+                Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
+                        .show();
             }
         }
     }
@@ -265,23 +331,25 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public static void copyFile(File src, File dst) throws IOException
-    {
-        FileChannel inChannel = new FileInputStream(src).getChannel();
-        FileChannel outChannel = new FileOutputStream(dst).getChannel();
-        try
-        {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
+
+
+    private void generateData() {
+        datos.clear();
+        String[] nombres = {"Luis", "María", "Juan", "Norberto", "Laura", "Pelayo", "Jose", "Juana", "Julia", "Irene", "Julia", "Yasen", "Roman", "Alan", "Ivan", "Javi", "Alberto", "Cristina", "Miguel", "David", "Liang", "Omar", "Nacho", "Manuel", "Alejandro", "Daniel", "Jorge"};
+        String[] apellidos = {"De Diego", "Martín", "Antón", "Clavo", "Alonso", "Díaz", "Crespo", "Fernandez", "Torres", "De Murcia", "Rodriguez", "Gomez", "Amo", "Sousa", "Ibarra", "De Andres", "Diaz", "Roldan", "Del Mar", "Amor", "Shu", "Rios", "Palacios", "Casariego", "Nicolas", "Hernandez", "Valle"};
+        for (int i = 0; i < 30; i++) {
+            String nombre = nombres[(int) (Math.random() * (26 - 0 + 1) + 0)];
+            String apellido = apellidos[(int) (Math.random() * (26 - 0 + 1) + 0)];
+            datos.add(new Contacto(nombre,apellido , new Telefono(generaTelefonos(), Tipo.MOVIL), "", "", java.util.UUID.randomUUID().toString() + ".json", getMatColor("500", this)));
         }
-        finally
-        {
-            if (inChannel != null)
-                inChannel.close();
-            if (outChannel != null)
-                outChannel.close();
-        }
+        saveData(datos);
+        orderData(datos);
+        adaptador.notifyDataSetChanged();
     }
 
+    private String generaTelefonos() {
+        return String.valueOf((int) (Math.random() * (699999999 - 600000000 + 1) + 600000000));
+    }
 
 
 }

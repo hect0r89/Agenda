@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -26,6 +27,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView email;
     private TextView direccion;
     private Contacto contacto;
+    private LinearLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class DetailActivity extends AppCompatActivity {
         tipo = (TextView) findViewById(R.id.txtTipo);
         email = (TextView) findViewById(R.id.txtEmail);
         direccion = (TextView) findViewById(R.id.txtDireccion);
+        layout = (LinearLayout) findViewById(R.id.layoutDetalle);
 
         Intent intent = getIntent();
         contacto = intent.getParcelableExtra("contacto");
@@ -121,10 +124,11 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void initializeData(Contacto contacto){
-        nombre.setText(contacto.getNombre() + " " + contacto.getApellidos());
+        nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() :contacto.getNombre() + " " + contacto.getApellidos());
         telefono.setText(contacto.getTelefono().getNumero());
         tipo.setText(contacto.getTelefono().getTipo());
         email.setText(contacto.getCorreo());
         direccion.setText(contacto.getDireccion());
+        layout.setBackgroundColor(contacto.getColor());
     }
 }

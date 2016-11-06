@@ -14,6 +14,7 @@ public class Contacto implements Parcelable {
     private String correo;
     private String direccion;
     private String uuid;
+    private int color;
 
     private Contacto(Parcel in) {
         telefono = in.readParcelable(Telefono.class.getClassLoader());
@@ -22,6 +23,7 @@ public class Contacto implements Parcelable {
         correo = in.readString();
         direccion = in.readString();
         uuid = in.readString();
+        color = in.readInt();
     }
 
     public static final Parcelable.Creator<Contacto> CREATOR
@@ -40,13 +42,14 @@ public class Contacto implements Parcelable {
         this.telefono = telefono;
     }
 
-    public Contacto(String nombre, String apellidos, Telefono telefono, String correo, String direccion, String uuid) {
+    public Contacto(String nombre, String apellidos, Telefono telefono, String correo, String direccion, String uuid, int color) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.telefono = telefono;
         this.correo = correo;
         this.direccion = direccion;
         this.uuid = uuid;
+        this.color = color;
     }
 
     public String getNombre() {
@@ -97,6 +100,14 @@ public class Contacto implements Parcelable {
         this.uuid = uuid;
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -110,5 +121,6 @@ public class Contacto implements Parcelable {
         parcel.writeString(correo);
         parcel.writeString(direccion);
         parcel.writeString(uuid);
+        parcel.writeInt(color);
     }
 }

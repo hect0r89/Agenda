@@ -46,13 +46,13 @@ public enum Tipo implements Parcelable {
         Tipo tipo = CASA;
         switch (value){
             case "Casa":
-                Tipo.valueOf("CASA");
+                tipo = Tipo.valueOf("CASA");
                 break;
             case "Trabajo":
-                Tipo.valueOf("TRABAJO");
+                tipo= Tipo.valueOf("TRABAJO");
                 break;
             case "Móvil":
-                Tipo.valueOf("MOVIL");
+                tipo = Tipo.valueOf("MOVIL");
                 break;
         }
          return tipo;

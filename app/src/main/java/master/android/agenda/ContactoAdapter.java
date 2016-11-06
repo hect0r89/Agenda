@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -50,11 +52,11 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
 
         public void bindContacto(Contacto contacto) {
             String initial = contacto.getNombre().substring(0, 1).toUpperCase();
-            txtNombre.setText(contacto.getNombre());
+            txtNombre.setText(contacto.getNombre()+" "+contacto.getApellidos());
             txtNumero.setText((contacto.getTelefono() == null || contacto.getTelefono().getNumero().isEmpty()) ? "Sin número" : contacto.getTelefono().getNumero());
             txtOval.setText(initial);
             GradientDrawable bgShape = (GradientDrawable) txtOval.getBackground();
-            bgShape.setColor(Utils.getMatColor("500", context));
+            bgShape.setColor(contacto.getColor());
         }
     }
 
@@ -137,11 +139,9 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
         File fdelete = new File(context.getFilesDir(), contacto.getUuid());
         if (fdelete.exists()) {
             if (fdelete.delete()) {
-                new AlertDialog.Builder(context).setTitle("Información").setMessage("Contacto eliminado correctamente").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).show();
+                CoordinatorLayout coord = (CoordinatorLayout) ((Activity) context).findViewById(R.id.activity_main);
+                Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
+                        .show();
                 datos.remove(contacto);
                 notifyDataSetChanged();
             } else {
