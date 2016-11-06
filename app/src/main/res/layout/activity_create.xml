@@ -26,9 +26,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:layout_marginEnd="10dp"
                 app:srcCompat="@drawable/ic_person_black_24dp" />
 
 
@@ -54,9 +54,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:layout_marginEnd="10dp"
                 app:srcCompat="@drawable/ic_person_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
@@ -82,9 +82,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:layout_marginEnd="10dp"
                 app:srcCompat="@drawable/ic_call_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
@@ -96,14 +96,15 @@
                     android:id="@+id/etTelefono"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Teléfono" />
+                    android:hint="Teléfono"
+                    android:inputType="number" />
             </android.support.design.widget.TextInputLayout>
 
             <Spinner
                 android:id="@+id/spinnerTipo"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.4"/>
+                android:layout_weight="0.4" />
 
         </LinearLayout>
 
@@ -117,9 +118,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:layout_marginEnd="10dp"
                 app:srcCompat="@drawable/ic_email_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
@@ -145,9 +146,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:layout_marginEnd="10dp"
                 app:srcCompat="@drawable/ic_place_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
