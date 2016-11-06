@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_create"
     android:layout_width="match_parent"
@@ -28,7 +29,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:src="@drawable/ic_person_black_24dp" />
+                app:srcCompat="@drawable/ic_person_black_24dp" />
 
 
             <android.support.design.widget.TextInputLayout
@@ -56,7 +57,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:src="@drawable/ic_person_black_24dp" />
+                app:srcCompat="@drawable/ic_person_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="0dp"
@@ -84,7 +85,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:src="@drawable/ic_call_black_24dp" />
+                app:srcCompat="@drawable/ic_call_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="0dp"
@@ -95,6 +96,7 @@
                     android:id="@+id/etEditTelefono"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="phone"
                     android:hint="Teléfono" />
             </android.support.design.widget.TextInputLayout>
 
@@ -119,7 +121,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:src="@drawable/ic_email_black_24dp" />
+                app:srcCompat="@drawable/ic_email_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="0dp"
@@ -130,6 +132,7 @@
                     android:id="@+id/etEditCorreo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
                     android:hint="Correo" />
             </android.support.design.widget.TextInputLayout>
 
@@ -147,7 +150,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.1"
                 android:paddingTop="10dp"
-                android:src="@drawable/ic_place_black_24dp" />
+                app:srcCompat="@drawable/ic_place_black_24dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="0dp"
