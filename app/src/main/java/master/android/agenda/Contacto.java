@@ -7,19 +7,21 @@ import android.os.Parcelable;
  * Created by hector on 24/10/16.
  */
 
-public class Contacto implements Parcelable{
+public class Contacto implements Parcelable {
     private String nombre;
     private String apellidos;
-    private Telefono num_tlf;
+    private Telefono telefono;
     private String correo;
     private String direccion;
+    private String uuid;
 
     private Contacto(Parcel in) {
+        telefono = in.readParcelable(Telefono.class.getClassLoader());
         nombre = in.readString();
         apellidos = in.readString();
-        num_tlf = in.readParcelable(Telefono.class.getClassLoader());
         correo = in.readString();
         direccion = in.readString();
+        uuid = in.readString();
     }
 
     public static final Parcelable.Creator<Contacto> CREATOR
@@ -33,17 +35,18 @@ public class Contacto implements Parcelable{
         }
     };
 
-    public Contacto(String nombre, Telefono num_tlf) {
+    public Contacto(String nombre, Telefono telefono) {
         this.nombre = nombre;
-        this.num_tlf = num_tlf;
+        this.telefono = telefono;
     }
 
-    public Contacto(String nombre, String apellidos, Telefono num_tlf, String correo, String direccion) {
+    public Contacto(String nombre, String apellidos, Telefono telefono, String correo, String direccion, String uuid) {
         this.nombre = nombre;
         this.apellidos = apellidos;
-        this.num_tlf = num_tlf;
+        this.telefono = telefono;
         this.correo = correo;
         this.direccion = direccion;
+        this.uuid = uuid;
     }
 
     public String getNombre() {
@@ -62,12 +65,12 @@ public class Contacto implements Parcelable{
         this.apellidos = apellidos;
     }
 
-    public Telefono getNum_tlf() {
-        return num_tlf;
+    public Telefono getTelefono() {
+        return telefono;
     }
 
-    public void setNum_tlf(Telefono num_tlf) {
-        this.num_tlf = num_tlf;
+    public void setTelefono(Telefono telefono) {
+        this.telefono = telefono;
     }
 
     public String getCorreo() {
@@ -86,6 +89,14 @@ public class Contacto implements Parcelable{
         this.direccion = direccion;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -93,10 +104,11 @@ public class Contacto implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(telefono, i);
         parcel.writeString(nombre);
         parcel.writeString(apellidos);
         parcel.writeString(correo);
         parcel.writeString(direccion);
-        parcel.writeParcelable(num_tlf, i);
+        parcel.writeString(uuid);
     }
 }

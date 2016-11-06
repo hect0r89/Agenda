@@ -29,7 +29,7 @@ public enum Tipo implements Parcelable {
     public static final Creator<Tipo> CREATOR = new Creator<Tipo>() {
         @Override
         public Tipo createFromParcel(Parcel in) {
-            return Tipo.values()[in.readInt()];
+            return get(in.readString());
         }
 
         @Override
@@ -40,6 +40,22 @@ public enum Tipo implements Parcelable {
 
     public String getTipo(){
         return tipo;
+    }
+
+    public static Tipo get(String value){
+        Tipo tipo = CASA;
+        switch (value){
+            case "Casa":
+                Tipo.valueOf("CASA");
+                break;
+            case "Trabajo":
+                Tipo.valueOf("TRABAJO");
+                break;
+            case "Móvil":
+                Tipo.valueOf("MOVIL");
+                break;
+        }
+         return tipo;
     }
 
 }

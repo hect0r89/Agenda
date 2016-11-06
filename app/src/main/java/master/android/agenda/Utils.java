@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 
+import java.util.ArrayList;
+
 /**
  * Created by hector on 26/10/16.
  */
@@ -22,5 +24,17 @@ public class Utils {
             colors.recycle();
         }
         return returnColor;
+    }
+
+    public static String validateContacto(Contacto c){
+        String errors ="";
+        if(c.getNombre().isEmpty()){
+            errors +="El nombre es obligatorio\n\n";
+        }
+        if(c.getTelefono().getNumero().isEmpty()){
+            errors+="El télefono es obligatorio";
+        }
+
+        return errors;
     }
 }

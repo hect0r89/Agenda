@@ -18,8 +18,9 @@ public class Telefono implements Parcelable {
     }
 
     private Telefono(Parcel in) {
-        numero = in.readString();
         tipo = in.readParcelable(Tipo.class.getClassLoader());
+        numero = in.readString();
+
 
     }
 
@@ -47,8 +48,8 @@ public class Telefono implements Parcelable {
         this.numero = numero;
     }
 
-    public Tipo getTipo() {
-        return tipo;
+    public String getTipo() {
+        return tipo.getTipo();
     }
 
     public void setTipo(Tipo tipo) {
@@ -62,7 +63,8 @@ public class Telefono implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(numero);
         parcel.writeParcelable(tipo, i);
+        parcel.writeString(numero);
+
     }
 }
