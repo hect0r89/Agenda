@@ -123,6 +123,14 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("contacto", contacto);
+        setResult(Activity.RESULT_FIRST_USER, returnIntent);
+        finish();
+    }
+
     public void initializeData(Contacto contacto){
         nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() :contacto.getNombre() + " " + contacto.getApellidos());
         telefono.setText(contacto.getTelefono().getNumero());

@@ -319,6 +319,18 @@ public class MainActivity extends AppCompatActivity {
                 CoordinatorLayout coord = (CoordinatorLayout) findViewById(R.id.activity_main);
                 Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
                         .show();
+            }else if(resultCode == RESULT_FIRST_USER){
+                Contacto contacto = data.getExtras().getParcelable("contacto");
+                int index = -1;
+                for (Contacto c : datos) {
+                    if (c.getUuid().equals(contacto != null ? contacto.getUuid() : null)) {
+                        index = datos.indexOf(c);
+                    }
+                }
+                datos.remove(index);
+                datos.add(contacto);
+                orderData(datos);
+                adaptador.notifyDataSetChanged();
             }
         }
     }
@@ -351,5 +363,8 @@ public class MainActivity extends AppCompatActivity {
         return String.valueOf((int) (Math.random() * (699999999 - 600000000 + 1) + 600000000));
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }
