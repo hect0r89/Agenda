@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
-public class DetailActivity2 extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity {
 
     private static final int EDIT_CONTACT = 2;
     private TextView nombre;
