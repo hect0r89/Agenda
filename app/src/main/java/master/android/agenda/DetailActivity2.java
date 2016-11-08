@@ -1,24 +1,20 @@
 package master.android.agenda;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-
 import java.io.File;
-import java.io.FileOutputStream;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity2 extends AppCompatActivity {
 
     private static final int EDIT_CONTACT = 2;
     private TextView nombre;

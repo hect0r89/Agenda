@@ -90,7 +90,10 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Contacto> orderData(ArrayList<Contacto> datos) {
         Collections.sort(datos, new Comparator<Contacto>() {
             public int compare(Contacto v1, Contacto v2) {
-                return v1.getNombre().compareToIgnoreCase(v2.getNombre());
+                int res = v1.getNombre().compareToIgnoreCase(v2.getNombre());
+                if (res != 0)
+                    return res;
+                return v1.getApellidos().compareToIgnoreCase(v2.getApellidos());
             }
         });
         return datos;
@@ -319,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                 CoordinatorLayout coord = (CoordinatorLayout) findViewById(R.id.activity_main);
                 Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
                         .show();
-            }else if(resultCode == RESULT_FIRST_USER){
+            } else if (resultCode == RESULT_FIRST_USER) {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
@@ -344,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void generateData() {
         datos.clear();
         String[] nombres = {"Luis", "María", "Juan", "Norberto", "Laura", "Pelayo", "Jose", "Juana", "Julia", "Irene", "Julia", "Yasen", "Roman", "Alan", "Ivan", "Javi", "Alberto", "Cristina", "Miguel", "David", "Liang", "Omar", "Nacho", "Manuel", "Alejandro", "Daniel", "Jorge"};
@@ -352,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 30; i++) {
             String nombre = nombres[(int) (Math.random() * (26 - 0 + 1) + 0)];
             String apellido = apellidos[(int) (Math.random() * (26 - 0 + 1) + 0)];
-            datos.add(new Contacto(nombre,apellido , new Telefono(generaTelefonos(), Tipo.MOVIL), "", "", java.util.UUID.randomUUID().toString() + ".json", getMatColor("500", this)));
+            datos.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "", java.util.UUID.randomUUID().toString() + ".json", getMatColor("500", this)));
         }
         saveData(datos);
         orderData(datos);
@@ -365,6 +367,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        orderData(datos);
+        adaptador.notifyDataSetChanged();
         super.onResume();
     }
 }

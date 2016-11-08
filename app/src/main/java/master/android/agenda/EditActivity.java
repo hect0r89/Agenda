@@ -45,13 +45,14 @@ public class EditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         contacto = intent.getParcelableExtra("contacto");
 
-        ArrayAdapter<Tipo> adapter = new ArrayAdapter<Tipo>(this, android.R.layout.simple_spinner_item, Tipo.values());
+        ArrayAdapter<Tipo> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Tipo.values());
 // Specify the layout to use when the list of choices appears
-        spinnerTipo.setSelection(Tipo.get(contacto.getTelefono().getTipo()).ordinal());
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner
 
         spinnerTipo.setAdapter(adapter);
+        spinnerTipo.setSelection(Tipo.get(contacto.getTelefono().getTipo()).ordinal());
 
         editTextNombre.setText(contacto.getNombre());
         editTextApellidos.setText(contacto.getApellidos());
