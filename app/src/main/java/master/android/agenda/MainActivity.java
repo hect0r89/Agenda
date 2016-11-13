@@ -1,8 +1,11 @@
 package master.android.agenda;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,7 +42,17 @@ import static master.android.agenda.Utils.validateContacto;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String COLUMN_NAME_FIRST_NAME = "nombre";
+    public static final String COLUMN_NAME_LAST_NAME = "apellidos";
+    public static final String COLUMN_NAME_EMAIL = "correo";
+    public static final String COLUMN_NAME_ADDRESS = "direccion";
+    public static final String COLUMN_NAME_COLOR = "color";
+    public static final String _ID = "_id";
+    public static final	String AUTHORITY ="com.master.agendacontentprovider";
+    private static final String uri =
+            "content://"+AUTHORITY+"/"+"Contactos";
 
+    public static final Uri CONTENT_URI = Uri.parse(uri);
     static final int CREATE_CONTACT = 1;
     private static final int EDIT_CONTACT = 2;
     private static final int DETAIL_CONTACT = 3;
@@ -69,6 +82,50 @@ public class MainActivity extends AppCompatActivity {
 
         recView.setAdapter(adaptador);
         recView.setAdapter(adaptador);
+
+        String[] projection = new String[]{
+                _ID,
+                COLUMN_NAME_FIRST_NAME,
+                COLUMN_NAME_LAST_NAME,
+                COLUMN_NAME_EMAIL,
+                COLUMN_NAME_ADDRESS,
+                COLUMN_NAME_COLOR};
+
+        Uri contactosUri =  CONTENT_URI;
+
+        ContentResolver cr = getContentResolver();
+
+//Hacemos la consulta
+        Cursor cur = cr.query(contactosUri,
+                projection, //Columnas a devolver
+                null,       //Condición de la query
+                null,       //Argumentos variables de la query
+                null);      //Orden de los resultados
+
+        if (cur.moveToFirst())
+        {
+            String nombre;
+            String telefono;
+            String email;
+
+            int colNombre = cur.getColumnIndex(COLUMN_NAME_FIRST_NAME);
+            int colApellido = cur.getColumnIndex(COLUMN_NAME_LAST_NAME);
+            int colEmail = cur.getColumnIndex(COLUMN_NAME_EMAIL);
+            int colDireccion = cur.getColumnIndex(COLUMN_NAME_ADDRESS);
+            int colColor = cur.getColumnIndex(COLUMN_NAME_COLOR);
+
+
+
+
+            do
+            {
+                nombre = cur.getString(colNombre);
+
+
+
+
+            } while (cur.moveToNext());
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         final Intent i = new Intent(this, CreateActivity.class);
