@@ -88,7 +88,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void deleteContact(Contacto contacto) {
-        File fdelete = new File(getFilesDir(), contacto.getUuid());
+        File fdelete = new File(getFilesDir(), contacto.getId());
         if (fdelete.exists()) {
             if (fdelete.delete()) {
                 Intent returnIntent = new Intent();

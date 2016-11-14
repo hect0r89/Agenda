@@ -81,7 +81,7 @@ public class EditActivity extends AppCompatActivity {
                 if(errors.isEmpty()){
                     Gson gson = new Gson();
                     String json = gson.toJson(contacto);
-                    String filename = contacto.getUuid();
+                    String filename = contacto.getId();
                     FileOutputStream outputStream;
                     try {
                         outputStream = openFileOutput(filename, Context.MODE_PRIVATE);

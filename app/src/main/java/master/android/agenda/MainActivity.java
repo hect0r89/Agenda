@@ -83,49 +83,7 @@ public class MainActivity extends AppCompatActivity {
         recView.setAdapter(adaptador);
         recView.setAdapter(adaptador);
 
-        String[] projection = new String[]{
-                _ID,
-                COLUMN_NAME_FIRST_NAME,
-                COLUMN_NAME_LAST_NAME,
-                COLUMN_NAME_EMAIL,
-                COLUMN_NAME_ADDRESS,
-                COLUMN_NAME_COLOR};
 
-        Uri contactosUri =  CONTENT_URI;
-
-        ContentResolver cr = getContentResolver();
-
-//Hacemos la consulta
-        Cursor cur = cr.query(contactosUri,
-                projection, //Columnas a devolver
-                null,       //Condición de la query
-                null,       //Argumentos variables de la query
-                null);      //Orden de los resultados
-
-        if (cur.moveToFirst())
-        {
-            String nombre;
-            String telefono;
-            String email;
-
-            int colNombre = cur.getColumnIndex(COLUMN_NAME_FIRST_NAME);
-            int colApellido = cur.getColumnIndex(COLUMN_NAME_LAST_NAME);
-            int colEmail = cur.getColumnIndex(COLUMN_NAME_EMAIL);
-            int colDireccion = cur.getColumnIndex(COLUMN_NAME_ADDRESS);
-            int colColor = cur.getColumnIndex(COLUMN_NAME_COLOR);
-
-
-
-
-            do
-            {
-                nombre = cur.getString(colNombre);
-
-
-
-
-            } while (cur.moveToNext());
-        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         final Intent i = new Intent(this, CreateActivity.class);
@@ -157,30 +115,82 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ArrayList<Contacto> readData() {
-        BufferedReader input = null;
-        File file = null;
-        Gson gson = new Gson();
         ArrayList<Contacto> data = new ArrayList<>();
+        String[] projection = new String[]{
+                _ID,
+                COLUMN_NAME_FIRST_NAME,
+                COLUMN_NAME_LAST_NAME,
+                COLUMN_NAME_EMAIL,
+                COLUMN_NAME_ADDRESS,
+                COLUMN_NAME_COLOR};
 
-        for (File f : getFilesDir().listFiles()) {
-            if (f.isFile() && f.getName().endsWith(".json")) {
-                String name = f.getName();
-                try {
-                    file = new File(getFilesDir(), name); // Pass getFilesDir() and "MyFile" to read file
+        Uri contactosUri =  CONTENT_URI;
 
-                    input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-                    String line;
-                    StringBuffer buffer = new StringBuffer();
-                    while ((line = input.readLine()) != null) {
-                        buffer.append(line);
-                    }
+        ContentResolver cr = getContentResolver();
 
-                    data.add(gson.fromJson(buffer.toString(), Contacto.class));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+//Hacemos la consulta
+        Cursor cur = cr.query(contactosUri,
+                projection, //Columnas a devolver
+                null,       //Condición de la query
+                null,       //Argumentos variables de la query
+                null);      //Orden de los resultados
+
+        if (cur.moveToFirst())
+        {
+            String nombre;
+            String apellidos;
+            String direccion;
+            int color;
+            String email;
+            String id;
+
+            int colNombre = cur.getColumnIndex(COLUMN_NAME_FIRST_NAME);
+            int colApellido = cur.getColumnIndex(COLUMN_NAME_LAST_NAME);
+            int colEmail = cur.getColumnIndex(COLUMN_NAME_EMAIL);
+            int colDireccion = cur.getColumnIndex(COLUMN_NAME_ADDRESS);
+            int colColor = cur.getColumnIndex(COLUMN_NAME_COLOR);
+            int colId = cur.getColumnIndex(_ID);
+
+
+
+
+            do
+            {
+                nombre = cur.getString(colNombre);
+                apellidos = cur.getString(colApellido);
+                email = cur.getString(colEmail);
+                direccion = cur.getString(colDireccion);
+                color = Integer.parseInt(cur.getString(colColor));
+                id = cur.getString(colId);
+                data.add(new Contacto(nombre, apellidos, new Telefono("666666666", Tipo.MOVIL), email, direccion, id, color));
+
+            } while (cur.moveToNext());
         }
+
+//        BufferedReader input = null;
+//        File file = null;
+//        Gson gson = new Gson();
+//        ArrayList<Contacto> data = new ArrayList<>();
+//
+//        for (File f : getFilesDir().listFiles()) {
+//            if (f.isFile() && f.getName().endsWith(".json")) {
+//                String name = f.getName();
+//                try {
+//                    file = new File(getFilesDir(), name); // Pass getFilesDir() and "MyFile" to read file
+//
+//                    input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+//                    String line;
+//                    StringBuffer buffer = new StringBuffer();
+//                    while ((line = input.readLine()) != null) {
+//                        buffer.append(line);
+//                    }
+//
+//                    data.add(gson.fromJson(buffer.toString(), Contacto.class));
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
 
         return data;
     }
@@ -255,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveData(ArrayList<Contacto> datos) {
         for (Contacto contacto : datos) {
-            String filename = contacto.getUuid();
+            String filename = contacto.getId();
 
             String errors = validateContacto(contacto);
             if (errors.isEmpty()) {
@@ -355,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getUuid().equals(contacto != null ? contacto.getUuid() : null)) {
+                    if (c.getId().equals(contacto != null ? contacto.getId() : null)) {
                         index = datos.indexOf(c);
 
                     }
@@ -370,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getUuid().equals(contacto != null ? contacto.getUuid() : null)) {
+                    if (c.getId().equals(contacto != null ? contacto.getId() : null)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -383,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getUuid().equals(contacto != null ? contacto.getUuid() : null)) {
+                    if (c.getId().equals(contacto != null ? contacto.getId() : null)) {
                         index = datos.indexOf(c);
                     }
                 }
