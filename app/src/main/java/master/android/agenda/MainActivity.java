@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recView;
     private ArrayList<Contacto> datos;
     private ContactoAdapter adaptador;
+    private DAOContentProvider dao;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -72,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        datos = readData();
+        dao = new DAOContentProvider(getApplicationContext());
+        datos = dao.getAllContacts();
 
 
         recView = (RecyclerView) findViewById(R.id.RecView);
@@ -82,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         recView.setAdapter(adaptador);
         recView.setAdapter(adaptador);
+
 
 
 
@@ -114,86 +117,6 @@ public class MainActivity extends AppCompatActivity {
         return datos;
     }
 
-    private ArrayList<Contacto> readData() {
-        ArrayList<Contacto> data = new ArrayList<>();
-        String[] projection = new String[]{
-                _ID,
-                COLUMN_NAME_FIRST_NAME,
-                COLUMN_NAME_LAST_NAME,
-                COLUMN_NAME_EMAIL,
-                COLUMN_NAME_ADDRESS,
-                COLUMN_NAME_COLOR};
-
-        Uri contactosUri =  CONTENT_URI;
-
-        ContentResolver cr = getContentResolver();
-
-//Hacemos la consulta
-        Cursor cur = cr.query(contactosUri,
-                projection, //Columnas a devolver
-                null,       //Condición de la query
-                null,       //Argumentos variables de la query
-                null);      //Orden de los resultados
-
-        if (cur.moveToFirst())
-        {
-            String nombre;
-            String apellidos;
-            String direccion;
-            int color;
-            String email;
-            String id;
-
-            int colNombre = cur.getColumnIndex(COLUMN_NAME_FIRST_NAME);
-            int colApellido = cur.getColumnIndex(COLUMN_NAME_LAST_NAME);
-            int colEmail = cur.getColumnIndex(COLUMN_NAME_EMAIL);
-            int colDireccion = cur.getColumnIndex(COLUMN_NAME_ADDRESS);
-            int colColor = cur.getColumnIndex(COLUMN_NAME_COLOR);
-            int colId = cur.getColumnIndex(_ID);
-
-
-
-
-            do
-            {
-                nombre = cur.getString(colNombre);
-                apellidos = cur.getString(colApellido);
-                email = cur.getString(colEmail);
-                direccion = cur.getString(colDireccion);
-                color = Integer.parseInt(cur.getString(colColor));
-                id = cur.getString(colId);
-                data.add(new Contacto(nombre, apellidos, new Telefono("666666666", Tipo.MOVIL), email, direccion, id, color));
-
-            } while (cur.moveToNext());
-        }
-
-//        BufferedReader input = null;
-//        File file = null;
-//        Gson gson = new Gson();
-//        ArrayList<Contacto> data = new ArrayList<>();
-//
-//        for (File f : getFilesDir().listFiles()) {
-//            if (f.isFile() && f.getName().endsWith(".json")) {
-//                String name = f.getName();
-//                try {
-//                    file = new File(getFilesDir(), name); // Pass getFilesDir() and "MyFile" to read file
-//
-//                    input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-//                    String line;
-//                    StringBuffer buffer = new StringBuffer();
-//                    while ((line = input.readLine()) != null) {
-//                        buffer.append(line);
-//                    }
-//
-//                    data.add(gson.fromJson(buffer.toString(), Contacto.class));
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-
-        return data;
-    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -246,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             Contacto[] contactos = gson.fromJson(buffer.toString(), Contacto[].class);
             datos.clear();
             saveData(new ArrayList<>(Arrays.asList(contactos)));
-            datos.addAll(readData());
+            datos.addAll(dao.getAllContacts());
             orderData(datos);
             adaptador.notifyDataSetChanged();
 
