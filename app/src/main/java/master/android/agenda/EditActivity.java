@@ -79,17 +79,8 @@ public class EditActivity extends AppCompatActivity {
                 contacto.setDireccion(editTextDireccion.getText().toString());
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
-                    Gson gson = new Gson();
-                    String json = gson.toJson(contacto);
-                    String filename = String.valueOf(contacto.getId());
-                    FileOutputStream outputStream;
-                    try {
-                        outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                        outputStream.write(json.getBytes());
-                        outputStream.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
+                    dao.updateContact(contacto);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("contacto", contacto);
                     setResult(Activity.RESULT_OK, returnIntent);

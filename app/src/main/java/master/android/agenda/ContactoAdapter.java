@@ -52,7 +52,7 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
 
         public void bindContacto(Contacto contacto) {
             String initial = contacto.getNombre().substring(0, 1).toUpperCase();
-            txtNombre.setText(contacto.getNombre()+" "+contacto.getApellidos());
+            txtNombre.setText(contacto.getNombre() + " " + contacto.getApellidos());
             txtNumero.setText((contacto.getTelefono() == null || contacto.getTelefono().getNumero().isEmpty()) ? "Sin número" : contacto.getTelefono().getNumero());
             txtOval.setText(initial);
             GradientDrawable bgShape = (GradientDrawable) txtOval.getBackground();
@@ -136,22 +136,21 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
     }
 
     private void deleteContact(Contacto contacto) {
-        File fdelete = new File(context.getFilesDir(), String.valueOf(contacto.getId()));
-        if (fdelete.exists()) {
-            if (fdelete.delete()) {
-                CoordinatorLayout coord = (CoordinatorLayout) ((Activity) context).findViewById(R.id.activity_main);
-                Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
-                        .show();
-                datos.remove(contacto);
-                notifyDataSetChanged();
-            } else {
-                new AlertDialog.Builder(context).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).show();
-            }
+        DAOContentProvider dao = new DAOContentProvider(context);
+        if (dao.deleteContact(contacto)!=0) {
+            CoordinatorLayout coord = (CoordinatorLayout) ((Activity) context).findViewById(R.id.activity_main);
+            Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
+                    .show();
+            datos.remove(contacto);
+            notifyDataSetChanged();
+        } else {
+            new AlertDialog.Builder(context).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            }).show();
         }
+
     }
 
     @Override

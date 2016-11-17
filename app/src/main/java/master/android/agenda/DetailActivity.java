@@ -88,22 +88,21 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void deleteContact(Contacto contacto) {
-        File fdelete = new File(getFilesDir(), String.valueOf(contacto.getId()));
-        if (fdelete.exists()) {
-            if (fdelete.delete()) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("contacto", contacto);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
+        DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
+        if (dao.deleteContact(contacto) != 0) {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("contacto", contacto);
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
 
-            } else {
-                new AlertDialog.Builder(this).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).show();
-            }
+        } else {
+            new AlertDialog.Builder(this).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            }).show();
         }
+
     }
 
     @Override
@@ -127,8 +126,8 @@ public class DetailActivity extends AppCompatActivity {
         finish();
     }
 
-    public void initializeData(Contacto contacto){
-        nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() :contacto.getNombre() + " " + contacto.getApellidos());
+    public void initializeData(Contacto contacto) {
+        nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() : contacto.getNombre() + " " + contacto.getApellidos());
         telefono.setText(contacto.getTelefono().getNumero());
         tipo.setText(contacto.getTelefono().getTipo());
         email.setText(contacto.getCorreo());

@@ -64,12 +64,11 @@ public class CreateActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_create:
-                String filename = java.util.UUID.randomUUID().toString() + ".json";
-                Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem(), 1), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), 1, Utils.getMatColor("500", this));
+                Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem()), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), Utils.getMatColor("500", this));
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
                     DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
-                    dao.insertContact(contacto);
+                    contacto.setId(dao.insertContact(contacto));
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("contacto", contacto);
                     setResult(Activity.RESULT_OK, returnIntent);

@@ -21,14 +21,15 @@ public class DAOContentProvider {
 
 
     private final Context context;
+    private ContentResolver cr;
 
 
     public DAOContentProvider(Context context) {
         this.context = context;
+        cr = this.context.getContentResolver();
     }
 
-    public void insertContact(Contacto contact) {
-        ContentResolver cr = context.getContentResolver();
+    public long insertContact(Contacto contact) {
 
         ContentValues valuesPhone = new ContentValues();
 
@@ -49,7 +50,9 @@ public class DAOContentProvider {
         valuesContact.put(ContactEntry.COLUMN_NAME_COLOR, contact.getColor());
 
 
-        cr.insert(Uri.parse(ContactEntry.contactUri), valuesContact);
+        Uri uContact = cr.insert(Uri.parse(ContactEntry.contactUri), valuesContact);
+        return ContentUris.parseId(uContact);
+
     }
 
     public ArrayList<Contacto> getAllContacts() {
@@ -87,7 +90,7 @@ public class DAOContentProvider {
 
                 int colNombre = cur.getColumnIndex(ContactEntry.COLUMN_NAME_FIRST_NAME);
                 int colApellido = cur.getColumnIndex(ContactEntry.COLUMN_NAME_LAST_NAME);
-                int colTelefono = cur.getColumnIndex(ContactEntry.COLUMN_NAME_LAST_NAME);
+                int colTelefono = cur.getColumnIndex(ContactEntry.COLUMN_NAME_PHONE);
                 int colEmail = cur.getColumnIndex(ContactEntry.COLUMN_NAME_EMAIL);
                 int colDireccion = cur.getColumnIndex(ContactEntry.COLUMN_NAME_ADDRESS);
                 int colColor = cur.getColumnIndex(ContactEntry.COLUMN_NAME_COLOR);
@@ -111,15 +114,48 @@ public class DAOContentProvider {
         return data;
     }
 
+    public int deleteContact(Contacto contact){
+        int cont = 0;
+        Uri contactosUri =  Uri.parse(ContactEntry.contactUri+"/"+String.valueOf(contact.getId()));
+        Uri telefonosUri =  Uri.parse(PhoneEntry.phoneContactUri+"/"+String.valueOf(contact.getTelefono().getId()));
+        cont = cr.delete(contactosUri,null, null);
+        cr.delete(telefonosUri,null, null);
+        return cont;
+    }
+
+    public int updateContact(Contacto contact){
+        int cont = 0;
+        ContentValues valuesPhone = new ContentValues();
+
+        Telefono tlf = contact.getTelefono();
+        valuesPhone.put(PhoneEntry.COLUMN_NAME_NUMBER, tlf.getNumero());
+        valuesPhone.put(PhoneEntry.COLUMN_NAME_TYPE, tlf.getEnumTipo().ordinal());
+
+        cr.update(Uri.parse(PhoneEntry.phoneContactUri+"/"+contact.getTelefono().getId()), valuesPhone, null, null);
+
+        ContentValues valuesContact = new ContentValues();
+
+        valuesContact.put(ContactEntry.COLUMN_NAME_FIRST_NAME, contact.getNombre());
+        valuesContact.put(ContactEntry.COLUMN_NAME_LAST_NAME, contact.getApellidos());
+        valuesContact.put(ContactEntry.COLUMN_NAME_EMAIL, contact.getCorreo());
+        valuesContact.put(ContactEntry.COLUMN_NAME_ADDRESS, contact.getDireccion());
+        valuesContact.put(ContactEntry.COLUMN_NAME_COLOR, contact.getColor());
+
+
+        cont = cr.update(Uri.parse(ContactEntry.contactUri+"/"+contact.getId()), valuesContact, null, null);
+
+        return cont;
+    }
+
     public Telefono getTelefono(long id) {
         Telefono telefono = null;
-        ContentResolver cr = context.getContentResolver();
+
         String[] projectionPhone = new String[]{
                 PhoneEntry._ID,
                 PhoneEntry.COLUMN_NAME_NUMBER,
                 PhoneEntry.COLUMN_NAME_TYPE};
 
-        Uri telefonosUri =  Uri.parse(PhoneEntry.phoneContactUri+"/"+String.valueOf(id));;
+        Uri telefonosUri =  Uri.parse(PhoneEntry.phoneContactUri+"/"+String.valueOf(id));
         Cursor curPh = cr.query(telefonosUri,
                 projectionPhone, //Columnas a devolver
                 null,       //Condición de la query

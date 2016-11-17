@@ -42,17 +42,6 @@ import static master.android.agenda.Utils.validateContacto;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String COLUMN_NAME_FIRST_NAME = "nombre";
-    public static final String COLUMN_NAME_LAST_NAME = "apellidos";
-    public static final String COLUMN_NAME_EMAIL = "correo";
-    public static final String COLUMN_NAME_ADDRESS = "direccion";
-    public static final String COLUMN_NAME_COLOR = "color";
-    public static final String _ID = "_id";
-    public static final	String AUTHORITY ="com.master.agendacontentprovider";
-    private static final String uri =
-            "content://"+AUTHORITY+"/"+"Contactos";
-
-    public static final Uri CONTENT_URI = Uri.parse(uri);
     static final int CREATE_CONTACT = 1;
     private static final int EDIT_CONTACT = 2;
     private static final int DETAIL_CONTACT = 3;
@@ -187,23 +176,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveData(ArrayList<Contacto> datos) {
+        DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
         for (Contacto contacto : datos) {
-            String filename = String.valueOf(contacto.getId());
-
             String errors = validateContacto(contacto);
             if (errors.isEmpty()) {
-                Gson gson = new Gson();
-                String json = gson.toJson(contacto);
-                FileOutputStream outputStream;
-
-                try {
-                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(json.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                dao.insertContact(contacto);
             } else {
                 new AlertDialog.Builder(this).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -288,9 +265,8 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (String.valueOf(c.getId()).equals(contacto != null ? contacto.getId() : null)) {
+                    if (c.getId()== (contacto != null ? contacto.getId() : -1)) {
                         index = datos.indexOf(c);
-
                     }
                 }
                 datos.remove(index);
@@ -303,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (String.valueOf(c.getId()).equals(contacto != null ? contacto.getId() : null)) {
+                    if (c.getId()== (contacto != null ? contacto.getId() : -1)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -316,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (String.valueOf(c.getId()).equals(contacto != null ? contacto.getId() : null)) {
+                    if (c.getId()== (contacto != null ? contacto.getId() : -1)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -344,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 30; i++) {
             String nombre = nombres[(int) (Math.random() * (26 - 0 + 1) + 0)];
             String apellido = apellidos[(int) (Math.random() * (26 - 0 + 1) + 0)];
-            datos.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL, 1), "", "", 1 , getMatColor("500", this)));
+            datos.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "",  getMatColor("500", this)));
         }
         saveData(datos);
         orderData(datos);

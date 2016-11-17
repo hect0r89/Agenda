@@ -52,6 +52,15 @@ public class Contacto implements Parcelable {
         this.color = color;
     }
 
+    public Contacto(String nombre, String apellidos, Telefono telefono, String correo, String direccion, int color) {
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.direccion = direccion;
+        this.color = color;
+    }
+
     public String getNombre() {
         return nombre;
     }

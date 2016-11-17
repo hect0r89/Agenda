@@ -19,6 +19,12 @@ public class Telefono implements Parcelable {
         this.id = id;
     }
 
+    public Telefono(String numero, Tipo tipo) {
+        this.numero = numero;
+        this.tipo = tipo;
+
+    }
+
     private Telefono(Parcel in) {
         tipo = in.readParcelable(Tipo.class.getClassLoader());
         numero = in.readString();
