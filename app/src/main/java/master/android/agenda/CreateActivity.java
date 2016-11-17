@@ -65,20 +65,11 @@ public class CreateActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_create:
                 String filename = java.util.UUID.randomUUID().toString() + ".json";
-                Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem()), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), filename, Utils.getMatColor("500", this));
+                Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem(), 1), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), 1, Utils.getMatColor("500", this));
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
-                    Gson gson = new Gson();
-                    String json = gson.toJson(contacto);
-                    FileOutputStream outputStream;
-
-                    try {
-                        outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                        outputStream.write(json.getBytes());
-                        outputStream.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
+                    dao.insertContact(contacto);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("contacto", contacto);
                     setResult(Activity.RESULT_OK, returnIntent);

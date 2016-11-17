@@ -136,7 +136,7 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
     }
 
     private void deleteContact(Contacto contacto) {
-        File fdelete = new File(context.getFilesDir(), contacto.getId());
+        File fdelete = new File(context.getFilesDir(), String.valueOf(contacto.getId()));
         if (fdelete.exists()) {
             if (fdelete.delete()) {
                 CoordinatorLayout coord = (CoordinatorLayout) ((Activity) context).findViewById(R.id.activity_main);

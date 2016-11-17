@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveData(ArrayList<Contacto> datos) {
         for (Contacto contacto : datos) {
-            String filename = contacto.getId();
+            String filename = String.valueOf(contacto.getId());
 
             String errors = validateContacto(contacto);
             if (errors.isEmpty()) {
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getId().equals(contacto != null ? contacto.getId() : null)) {
+                    if (String.valueOf(c.getId()).equals(contacto != null ? contacto.getId() : null)) {
                         index = datos.indexOf(c);
 
                     }
@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getId().equals(contacto != null ? contacto.getId() : null)) {
+                    if (String.valueOf(c.getId()).equals(contacto != null ? contacto.getId() : null)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getId().equals(contacto != null ? contacto.getId() : null)) {
+                    if (String.valueOf(c.getId()).equals(contacto != null ? contacto.getId() : null)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 30; i++) {
             String nombre = nombres[(int) (Math.random() * (26 - 0 + 1) + 0)];
             String apellido = apellidos[(int) (Math.random() * (26 - 0 + 1) + 0)];
-            datos.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "", java.util.UUID.randomUUID().toString() + ".json", getMatColor("500", this)));
+            datos.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL, 1), "", "", 1 , getMatColor("500", this)));
         }
         saveData(datos);
         orderData(datos);

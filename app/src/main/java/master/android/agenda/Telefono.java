@@ -11,15 +11,18 @@ import android.os.Parcelable;
 public class Telefono implements Parcelable {
     private String numero;
     private Tipo tipo;
+    private long id;
 
-    public Telefono(String numero, Tipo tipo) {
+    public Telefono(String numero, Tipo tipo, long id) {
         this.numero = numero;
         this.tipo = tipo;
+        this.id = id;
     }
 
     private Telefono(Parcel in) {
         tipo = in.readParcelable(Tipo.class.getClassLoader());
         numero = in.readString();
+        id = in.readLong();
 
 
     }
@@ -52,8 +55,20 @@ public class Telefono implements Parcelable {
         return tipo.getTipo();
     }
 
+    public Tipo getEnumTipo() {
+        return tipo;
+    }
+
     public void setTipo(Tipo tipo) {
         this.tipo = tipo;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override
@@ -65,6 +80,7 @@ public class Telefono implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeParcelable(tipo, i);
         parcel.writeString(numero);
+        parcel.writeLong(id);
 
     }
 }

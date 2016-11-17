@@ -13,7 +13,7 @@ public class Contacto implements Parcelable {
     private Telefono telefono;
     private String correo;
     private String direccion;
-    private String id;
+    private long id;
     private int color;
 
     private Contacto(Parcel in) {
@@ -22,7 +22,7 @@ public class Contacto implements Parcelable {
         apellidos = in.readString();
         correo = in.readString();
         direccion = in.readString();
-        id = in.readString();
+        id = in.readLong();
         color = in.readInt();
     }
 
@@ -42,7 +42,7 @@ public class Contacto implements Parcelable {
         this.telefono = telefono;
     }
 
-    public Contacto(String nombre, String apellidos, Telefono telefono, String correo, String direccion, String id, int color) {
+    public Contacto(String nombre, String apellidos, Telefono telefono, String correo, String direccion, long id, int color) {
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.telefono = telefono;
@@ -92,11 +92,11 @@ public class Contacto implements Parcelable {
         this.direccion = direccion;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -120,7 +120,7 @@ public class Contacto implements Parcelable {
         parcel.writeString(apellidos);
         parcel.writeString(correo);
         parcel.writeString(direccion);
-        parcel.writeString(id);
+        parcel.writeLong(id);
         parcel.writeInt(color);
     }
 }

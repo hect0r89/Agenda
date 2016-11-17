@@ -74,14 +74,14 @@ public class EditActivity extends AppCompatActivity {
             case R.id.action_create:
                 contacto.setNombre(editTextNombre.getText().toString());
                 contacto.setApellidos(editTextApellidos.getText().toString());
-                contacto.setTelefono(new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem()));
+                contacto.setTelefono(new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem(),1));
                 contacto.setCorreo(editTextCorreo.getText().toString());
                 contacto.setDireccion(editTextDireccion.getText().toString());
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
                     Gson gson = new Gson();
                     String json = gson.toJson(contacto);
-                    String filename = contacto.getId();
+                    String filename = String.valueOf(contacto.getId());
                     FileOutputStream outputStream;
                     try {
                         outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
