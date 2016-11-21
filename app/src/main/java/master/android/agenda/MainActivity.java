@@ -175,12 +175,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void saveData(ArrayList<Contacto> datos) {
+    private ArrayList<Contacto> saveData(ArrayList<Contacto> datos) {
+        ArrayList<Contacto> datosNuevos = new ArrayList<>();
         DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
         for (Contacto contacto : datos) {
             String errors = validateContacto(contacto);
             if (errors.isEmpty()) {
-                dao.insertContact(contacto);
+                long id = dao.insertContact(contacto);
+                contacto.setId(id);
+                datosNuevos.add(contacto);
             } else {
                 new AlertDialog.Builder(this).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -189,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 }).show();
             }
         }
-
+        return datosNuevos;
     }
 
     private void exportToExternal() {
@@ -315,14 +318,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateData() {
         datos.clear();
+        ArrayList<Contacto> dataGenerated = new ArrayList<>();
         String[] nombres = {"Luis", "María", "Juan", "Norberto", "Laura", "Pelayo", "Jose", "Juana", "Julia", "Irene", "Julia", "Yasen", "Roman", "Alan", "Ivan", "Javi", "Alberto", "Cristina", "Miguel", "David", "Liang", "Omar", "Nacho", "Manuel", "Alejandro", "Daniel", "Jorge"};
         String[] apellidos = {"De Diego", "Martín", "Antón", "Clavo", "Alonso", "Díaz", "Crespo", "Fernandez", "Torres", "De Murcia", "Rodriguez", "Gomez", "Amo", "Sousa", "Ibarra", "De Andres", "Diaz", "Roldan", "Del Mar", "Amor", "Shu", "Rios", "Palacios", "Casariego", "Nicolas", "Hernandez", "Valle"};
         for (int i = 0; i < 30; i++) {
             String nombre = nombres[(int) (Math.random() * (26 - 0 + 1) + 0)];
             String apellido = apellidos[(int) (Math.random() * (26 - 0 + 1) + 0)];
-            datos.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "",  getMatColor("500", this)));
+            dataGenerated.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "",  getMatColor("500", this)));
         }
-        saveData(datos);
+        datos.addAll(saveData(dataGenerated));
         orderData(datos);
         adaptador.notifyDataSetChanged();
     }

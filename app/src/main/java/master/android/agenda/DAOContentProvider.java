@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import java.util.ArrayList;
-import java.util.concurrent.Phaser;
 
 import master.android.agenda.ContactContract.ContactEntry;
 import master.android.agenda.PhoneContract.PhoneEntry;
@@ -20,13 +19,11 @@ import master.android.agenda.PhoneContract.PhoneEntry;
 public class DAOContentProvider {
 
 
-    private final Context context;
     private ContentResolver cr;
 
 
     public DAOContentProvider(Context context) {
-        this.context = context;
-        cr = this.context.getContentResolver();
+        cr = context.getContentResolver();
     }
 
     public long insertContact(Contacto contact) {
@@ -68,7 +65,7 @@ public class DAOContentProvider {
 
         Uri contactosUri = Uri.parse(ContactEntry.contactUri);
 
-        ContentResolver cr = context.getContentResolver();
+
 
         Cursor cur = cr.query(contactosUri,
                 projection, //Columnas a devolver
@@ -115,7 +112,7 @@ public class DAOContentProvider {
     }
 
     public int deleteContact(Contacto contact){
-        int cont = 0;
+        int cont;
         Uri contactosUri =  Uri.parse(ContactEntry.contactUri+"/"+String.valueOf(contact.getId()));
         Uri telefonosUri =  Uri.parse(PhoneEntry.phoneContactUri+"/"+String.valueOf(contact.getTelefono().getId()));
         cont = cr.delete(contactosUri,null, null);
@@ -124,7 +121,6 @@ public class DAOContentProvider {
     }
 
     public int updateContact(Contacto contact){
-        int cont = 0;
         ContentValues valuesPhone = new ContentValues();
 
         Telefono tlf = contact.getTelefono();
@@ -142,9 +138,9 @@ public class DAOContentProvider {
         valuesContact.put(ContactEntry.COLUMN_NAME_COLOR, contact.getColor());
 
 
-        cont = cr.update(Uri.parse(ContactEntry.contactUri+"/"+contact.getId()), valuesContact, null, null);
+        return cr.update(Uri.parse(ContactEntry.contactUri+"/"+contact.getId()), valuesContact, null, null);
 
-        return cont;
+
     }
 
     public Telefono getTelefono(long id) {
