@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
 
 public class DetailActivity extends AppCompatActivity {
 
