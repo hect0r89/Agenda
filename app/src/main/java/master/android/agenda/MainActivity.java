@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
         recView.setAdapter(adaptador);
 
 
-
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         final Intent i = new Intent(this, CreateActivity.class);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -136,29 +134,38 @@ public class MainActivity extends AppCompatActivity {
 
         if (myDir.listFiles() != null) {
             try {
-                file = new File(myDir.getAbsolutePath(), "contacts.json");
+                file = new File(myDir.getAbsolutePath() + "/contacts.json");
+                if (file.exists()) {
+                    input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+                    String line;
+                    buffer = new StringBuffer();
 
-                input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-                String line;
-                buffer = new StringBuffer();
-
-                while ((line = input.readLine()) != null) {
-                    buffer.append(line);
+                    while ((line = input.readLine()) != null) {
+                        buffer.append(line);
+                    }
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            if (file.exists()) {
+                Contacto[] contactos = gson.fromJson(buffer.toString(), Contacto[].class);
+                datos.clear();
+                saveData(new ArrayList<>(Arrays.asList(contactos)));
+                datos.addAll(dao.getAllContacts());
+                orderData(datos);
+                adaptador.notifyDataSetChanged();
 
-            Contacto[] contactos = gson.fromJson(buffer.toString(), Contacto[].class);
-            datos.clear();
-            saveData(new ArrayList<>(Arrays.asList(contactos)));
-            datos.addAll(dao.getAllContacts());
-            orderData(datos);
-            adaptador.notifyDataSetChanged();
-
-            CoordinatorLayout coord = (CoordinatorLayout) findViewById(R.id.activity_main);
-            Snackbar.make(coord, "Contactos importados correctamente", Snackbar.LENGTH_LONG)
-                    .show();
+                CoordinatorLayout coord = (CoordinatorLayout) findViewById(R.id.activity_main);
+                Snackbar.make(coord, "Contactos importados correctamente", Snackbar.LENGTH_LONG)
+                        .show();
+            } else {
+                new AlertDialog.Builder(this).setTitle("Error").setMessage("No se han encontrado contactos para importar").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).show();
+            }
         } else {
             new AlertDialog.Builder(this).setTitle("Error").setMessage("No se han encontrado contactos para importar").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -262,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getId()== (contacto != null ? contacto.getId() : -1)) {
+                    if (c.getId() == (contacto != null ? contacto.getId() : -1)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -276,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getId()== (contacto != null ? contacto.getId() : -1)) {
+                    if (c.getId() == (contacto != null ? contacto.getId() : -1)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -289,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                 Contacto contacto = data.getExtras().getParcelable("contacto");
                 int index = -1;
                 for (Contacto c : datos) {
-                    if (c.getId()== (contacto != null ? contacto.getId() : -1)) {
+                    if (c.getId() == (contacto != null ? contacto.getId() : -1)) {
                         index = datos.indexOf(c);
                     }
                 }
@@ -318,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 30; i++) {
             String nombre = nombres[(int) (Math.random() * (26 - 0 + 1) + 0)];
             String apellido = apellidos[(int) (Math.random() * (26 - 0 + 1) + 0)];
-            dataGenerated.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "",  getMatColor("500", this)));
+            dataGenerated.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "", getMatColor("500", this)));
         }
         datos.addAll(saveData(dataGenerated));
         orderData(datos);
