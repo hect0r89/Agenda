@@ -9,6 +9,7 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,14 +26,20 @@ import java.util.ArrayList;
 
 public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.ContactoViewHolder> {
 
+
+
+
     private static final int EDIT_CONTACT = 2;
     private static final int DETAIL_CONTACT = 3;
     private ArrayList<Contacto> datos;
     private static Context context;
+    private  OnItemClickListener listener;
 
     public ContactoAdapter(ArrayList<Contacto> contactos, Context context) {
         this.datos = contactos;
         this.context = context;
+
+
     }
 
     public static class ContactoViewHolder
@@ -77,11 +84,10 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(context, DetailActivity.class);
-                i.putExtra("contacto", datos.get(pos));
-                ((Activity) context).startActivityForResult(i, DETAIL_CONTACT);
-
+                if(listener!=null)
+                    listener.onItemClick(datos.get(pos));
             }
+
         });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -151,6 +157,14 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
             }).show();
         }
 
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Contacto item);
     }
 
     @Override
