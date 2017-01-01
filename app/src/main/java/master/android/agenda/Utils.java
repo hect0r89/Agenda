@@ -31,7 +31,8 @@ public class Utils {
         if(c.getNombre().isEmpty()){
             errors +="El nombre es obligatorio\n\n";
         }
-        if(c.getTelefono().getNumero().isEmpty()){
+
+        if(c.getTelefono()== null || c.getTelefono().getNumero().isEmpty()){
             errors+="El télefono es obligatorio";
         }
 
