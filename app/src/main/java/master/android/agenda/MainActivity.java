@@ -7,7 +7,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements ListFragment.ContactosListener{
+public class MainActivity extends AppCompatActivity implements ContactoAdapter.OnItemClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,13 +17,12 @@ public class MainActivity extends AppCompatActivity implements ListFragment.Cont
         ListFragment frgListado
                 =(ListFragment)getSupportFragmentManager()
                 .findFragmentById(R.id.FrgListado);
-        frgListado.setContactosListener(this);
+
 
     }
 
-
     @Override
-    public void onContactoSeleccionado(Contacto c) {
+    public void onItemClick(Contacto c) {
         boolean hayDetalle =
                 (getSupportFragmentManager().findFragmentById(R.id.FrgDetail) != null);
         if(hayDetalle) {
@@ -31,4 +30,6 @@ public class MainActivity extends AppCompatActivity implements ListFragment.Cont
                     .findFragmentById(R.id.FrgDetail)).mostrarDetalle(c);
         }
     }
+
+
 }
