@@ -1,6 +1,7 @@
 package master.android.agenda;
 
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -50,7 +51,6 @@ public class ListFragment extends Fragment {
     private ArrayList<Contacto> datos;
     private ContactoAdapter adaptador;
     private DAOContentProvider dao;
-    private ContactosListener listener;
 
 
     public ListFragment() {
@@ -82,14 +82,7 @@ public class ListFragment extends Fragment {
 
         adaptador = new ContactoAdapter(orderData(datos), getActivity());
 
-        adaptador.setOnItemClickListener(new ContactoAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Contacto item) {
-                if (listener != null) {
-                    listener.onContactoSeleccionado(item);
-                }
-            }
-        });
+        adaptador.setOnItemClickListener((ContactoAdapter.OnItemClickListener) getActivity());
         recView.setAdapter(adaptador);
 
 
@@ -360,14 +353,6 @@ public class ListFragment extends Fragment {
         orderData(datos);
         adaptador.notifyDataSetChanged();
         super.onResume();
-    }
-
-    public interface ContactosListener {
-        void onContactoSeleccionado(Contacto c);
-    }
-
-    public void setContactosListener(ContactosListener listener) {
-        this.listener = listener;
     }
 
 }
