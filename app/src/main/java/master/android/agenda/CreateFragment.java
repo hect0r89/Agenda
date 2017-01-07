@@ -18,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
+
 import static master.android.agenda.Utils.validateContacto;
 
 
@@ -78,7 +80,9 @@ public class CreateFragment extends Fragment {
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
                     DAOContentProvider dao = new DAOContentProvider(getContext());
-                    contacto.setId(dao.insertContact(contacto));
+                    ArrayList<Long> ids = dao.insertContact(contacto);
+                    contacto.setId(ids.get(0));
+                    contacto.getTelefono().setId(ids.get(1));
                     if (mListener != null) {
                         mListener.onOkCreateContact(contacto);
                     }

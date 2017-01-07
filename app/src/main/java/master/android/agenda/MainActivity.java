@@ -2,6 +2,7 @@ package master.android.agenda;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +20,9 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
         View detailsFrame = findViewById(R.id.details);
         mDualPane = detailsFrame != null;
 
-        ListFragment l = ((ListFragment) fragmentManager.findFragmentById(R.id.container));
+
         if (!mDualPane) {
+            Fragment l = (fragmentManager.findFragmentById(R.id.container));
             if (savedInstanceState != null && l != null) {
                 return;
             }

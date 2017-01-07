@@ -63,6 +63,7 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         dao = new DAOContentProvider(getActivity());
         datos = dao.getAllContacts();
+        Log.d("sd","s");
 
     }
 
@@ -196,8 +197,9 @@ public class ListFragment extends Fragment {
         for (Contacto contacto : datos) {
             String errors = validateContacto(contacto);
             if (errors.isEmpty()) {
-                long id = dao.insertContact(contacto);
-                contacto.setId(id);
+                ArrayList<Long> ids = dao.insertContact(contacto);
+                contacto.setId(ids.get(0));
+                contacto.getTelefono().setId(ids.get(1));
                 datosNuevos.add(contacto);
             } else {
                 new AlertDialog.Builder(getActivity()).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {

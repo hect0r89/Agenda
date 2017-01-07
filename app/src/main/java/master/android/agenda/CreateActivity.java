@@ -68,7 +68,7 @@ public class CreateActivity extends AppCompatActivity {
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
                     DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
-                    contacto.setId(dao.insertContact(contacto));
+
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("contacto", contacto);
                     setResult(Activity.RESULT_OK, returnIntent);

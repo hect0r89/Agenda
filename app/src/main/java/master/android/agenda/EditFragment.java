@@ -100,7 +100,7 @@ public class EditFragment extends Fragment {
             case R.id.action_create:
                 contacto.setNombre(editTextNombre.getText().toString());
                 contacto.setApellidos(editTextApellidos.getText().toString());
-                contacto.setTelefono(new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem(), 1));
+                contacto.setTelefono(new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem(), contacto.getTelefono().getId()));
                 contacto.setCorreo(editTextCorreo.getText().toString());
                 contacto.setDireccion(editTextDireccion.getText().toString());
                 String errors = validateContacto(contacto);

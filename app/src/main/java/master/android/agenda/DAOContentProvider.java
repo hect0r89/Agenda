@@ -26,8 +26,8 @@ public class DAOContentProvider {
         cr = context.getContentResolver();
     }
 
-    public long insertContact(Contacto contact) {
-
+    public ArrayList<Long> insertContact(Contacto contact) {
+        ArrayList<Long> arrId = new ArrayList<>();
         ContentValues valuesPhone = new ContentValues();
 
         Telefono tlf = contact.getTelefono();
@@ -36,6 +36,7 @@ public class DAOContentProvider {
 
         Uri u = cr.insert(Uri.parse(PhoneEntry.phoneContactUri), valuesPhone);
         long idTlf = ContentUris.parseId(u);
+
 
         ContentValues valuesContact = new ContentValues();
 
@@ -48,7 +49,9 @@ public class DAOContentProvider {
 
 
         Uri uContact = cr.insert(Uri.parse(ContactEntry.contactUri), valuesContact);
-        return ContentUris.parseId(uContact);
+        arrId.add(ContentUris.parseId(uContact));
+        arrId.add(idTlf);
+        return arrId;
 
     }
 
