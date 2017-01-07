@@ -36,6 +36,17 @@ public class DetailFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public static DetailFragment newInstance(Contacto c) {
+        DetailFragment f = new DetailFragment();
+
+        // Supply index input as an argument.
+        Bundle args = new Bundle();
+        args.putParcelable("contacto", c);
+        f.setArguments(args);
+
+        return f;
+    }
+
 
 
     @Override
@@ -46,6 +57,7 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_detail, container, false);
         nombre = (TextView) v.findViewById(R.id.txtNombreApellidos);
@@ -54,6 +66,16 @@ public class DetailFragment extends Fragment {
         email = (TextView) v.findViewById(R.id.txtEmail);
         direccion = (TextView) v.findViewById(R.id.txtDireccion);
         layout = (LinearLayout) v.findViewById(R.id.layoutDetalle);
+
+        Contacto contacto = getArguments().getParcelable("contacto");
+
+        nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() : contacto.getNombre() + " " + contacto.getApellidos());
+        telefono.setText(contacto.getTelefono().getNumero());
+        tipo.setText(contacto.getTelefono().getTipo());
+        email.setText(contacto.getCorreo());
+        direccion.setText(contacto.getDireccion());
+        layout.setBackgroundColor(contacto.getColor());
+
         return v;
     }
 
@@ -63,6 +85,7 @@ public class DetailFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_detail, menu);
     }
