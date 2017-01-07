@@ -15,15 +15,17 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        FragmentManager fragmentManager = getSupportFragmentManager();
         View detailsFrame = findViewById(R.id.details);
         mDualPane = detailsFrame != null;
+
+        ListFragment l = ((ListFragment) fragmentManager.findFragmentById(R.id.container));
         if (!mDualPane) {
-            if (savedInstanceState != null) {
+            if (savedInstanceState != null && l != null) {
                 return;
             }
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
+
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             ListFragment fragment = new ListFragment();
             fragmentTransaction.add(R.id.container, fragment);
@@ -47,15 +49,18 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
                 detailsFrame.setVisibility(View.VISIBLE);
 
                 fragmentTransaction.add(R.id.details, fragment);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit();
             } else {
                 fragmentTransaction.replace(R.id.details, fragment);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit();
 
             }
         } else {
             fragmentTransaction.replace(R.id.container, fragment);
             fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             fragmentTransaction.commit();
         }
 

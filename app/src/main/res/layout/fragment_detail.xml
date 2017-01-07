@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:fitsSystemWindows="true"
     tools:context="master.android.agenda.DetailActivity">
 
     <LinearLayout
@@ -32,8 +32,8 @@
                     android:layout_width="200dp"
                     android:layout_height="200dp"
                     android:layout_marginTop="10dp"
-                    app:srcCompat="@drawable/ic_person_w_24dp"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_person_w_24dp" />
 
             </LinearLayout>
 
@@ -178,4 +178,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

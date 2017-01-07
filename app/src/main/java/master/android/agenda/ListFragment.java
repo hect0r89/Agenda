@@ -45,9 +45,7 @@ import static master.android.agenda.Utils.validateContacto;
 
 
 public class ListFragment extends Fragment {
-    static final int CREATE_CONTACT = 1;
-    private static final int EDIT_CONTACT = 2;
-    private static final int DETAIL_CONTACT = 3;
+
     private RecyclerView recView;
     private ArrayList<Contacto> datos;
     private ContactoAdapter adaptador;
@@ -89,7 +87,6 @@ public class ListFragment extends Fragment {
 
 
         FloatingActionButton fab = (FloatingActionButton) getView().findViewById(R.id.fab);
-        final Intent i = new Intent(getActivity(), CreateActivity.class);
         fab.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -173,8 +170,8 @@ public class ListFragment extends Fragment {
                 orderData(datos);
                 adaptador.notifyDataSetChanged();
 
-                CoordinatorLayout coord = (CoordinatorLayout) getView().findViewById(R.id.activity_main);
-                Snackbar.make(coord, "Contactos importados correctamente", Snackbar.LENGTH_LONG)
+
+                Snackbar.make(getView(), "Contactos importados correctamente", Snackbar.LENGTH_LONG)
                         .show();
             } else {
                 new AlertDialog.Builder(getActivity()).setTitle("Error").setMessage("No se han encontrado contactos para importar").setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -257,8 +254,8 @@ public class ListFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            CoordinatorLayout coord = (CoordinatorLayout) getView().findViewById(R.id.activity_main);
-            Snackbar.make(coord, "Contactos exportados correctamente", Snackbar.LENGTH_LONG)
+
+            Snackbar.make(getView(), "Contactos exportados correctamente", Snackbar.LENGTH_LONG)
                     .show();
         } else {
             new AlertDialog.Builder(getActivity()).setTitle("Error").setMessage("Error al exportar contactos").setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -283,61 +280,7 @@ public class ListFragment extends Fragment {
         adaptador.notifyDataSetChanged();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        if (requestCode == CREATE_CONTACT) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                Contacto contacto = data.getExtras().getParcelable("contacto");
-                datos.add(contacto);
-                orderData(datos);
-                adaptador.notifyDataSetChanged();
-            }
-        } else if (requestCode == EDIT_CONTACT) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                Contacto contacto = data.getExtras().getParcelable("contacto");
-                int index = -1;
-                for (Contacto c : datos) {
-                    if (c.getId() == (contacto != null ? contacto.getId() : -1)) {
-                        index = datos.indexOf(c);
-                    }
-                }
-                datos.remove(index);
-                datos.add(contacto);
-                orderData(datos);
-                adaptador.notifyDataSetChanged();
-            }
-        } else if (requestCode == DETAIL_CONTACT) {
-            if (resultCode == RESULT_OK) {
-                Contacto contacto = data.getExtras().getParcelable("contacto");
-                int index = -1;
-                for (Contacto c : datos) {
-                    if (c.getId() == (contacto != null ? contacto.getId() : -1)) {
-                        index = datos.indexOf(c);
-                    }
-                }
-                datos.remove(index);
-                adaptador.notifyDataSetChanged();
-                CoordinatorLayout coord = (CoordinatorLayout) getView().findViewById(R.id.activity_main);
-                Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
-                        .show();
-            } else if (resultCode == RESULT_FIRST_USER) {
-                Contacto contacto = data.getExtras().getParcelable("contacto");
-                int index = -1;
-                for (Contacto c : datos) {
-                    if (c.getId() == (contacto != null ? contacto.getId() : -1)) {
-                        index = datos.indexOf(c);
-                    }
-                }
-                datos.remove(index);
-                datos.add(contacto);
-                orderData(datos);
-                adaptador.notifyDataSetChanged();
-            }
-        }
-    }
+
 
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
@@ -410,7 +353,6 @@ public class ListFragment extends Fragment {
         }
         datos.remove(index);
         adaptador.notifyDataSetChanged();
-//        CoordinatorLayout coord = (CoordinatorLayout) getView().findViewById(R.id.activity_main);
         Snackbar.make(getView(), "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
                 .show();
     }
