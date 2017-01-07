@@ -2,6 +2,7 @@ package master.android.agenda;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ public class DetailFragment extends Fragment {
     private Contacto contacto;
     private LinearLayout layout;
 
+    private OnEditContacListener mListener;
+    private OnDeleteContacListener deleteListener;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -46,7 +49,6 @@ public class DetailFragment extends Fragment {
 
         return f;
     }
-
 
 
     @Override
@@ -67,7 +69,7 @@ public class DetailFragment extends Fragment {
         direccion = (TextView) v.findViewById(R.id.txtDireccion);
         layout = (LinearLayout) v.findViewById(R.id.layoutDetalle);
 
-        Contacto contacto = getArguments().getParcelable("contacto");
+        contacto = getArguments().getParcelable("contacto");
 
         nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() : contacto.getNombre() + " " + contacto.getApellidos());
         telefono.setText(contacto.getTelefono().getNumero());
@@ -94,9 +96,9 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
-                Intent i = new Intent(getActivity(), EditActivity.class);
-                i.putExtra("contacto", contacto);
-                startActivityForResult(i, EDIT_CONTACT);
+                if (mListener != null) {
+                    mListener.onEditContact(contacto);
+                }
                 return true;
             case R.id.action_delete:
                 AlertDialog alertbox = new AlertDialog.Builder(getActivity())
@@ -130,10 +132,9 @@ public class DetailFragment extends Fragment {
     private void deleteContact(Contacto contacto) {
         DAOContentProvider dao = new DAOContentProvider(getActivity());
         if (dao.deleteContact(contacto) != 0) {
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("contacto", contacto);
-//            setResult(Activity.RESULT_OK, returnIntent);
-//            finish();
+            if (deleteListener != null) {
+                deleteListener.onDeleteContact(contacto);
+            }
 
         } else {
             new AlertDialog.Builder(getActivity()).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -145,7 +146,37 @@ public class DetailFragment extends Fragment {
 
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnEditContacListener) {
+            mListener = (OnEditContacListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnEditContacListener");
+        }
+        if (context instanceof OnDeleteContacListener) {
+            deleteListener = (OnDeleteContacListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnDeleteContacListener");
+        }
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+        deleteListener = null;
+    }
+
+    public interface OnEditContacListener {
+        void onEditContact(Contacto c);
+    }
+
+    public interface OnDeleteContacListener {
+        void onDeleteContact(Contacto c);
+    }
 
 
     public void initializeData(Contacto contacto) {

@@ -2,6 +2,7 @@ package master.android.agenda;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -52,6 +53,7 @@ public class ListFragment extends Fragment {
     private ContactoAdapter adaptador;
     private DAOContentProvider dao;
 
+    private OnCreateContacListener mListener;
 
     public ListFragment() {
         // Required empty public constructor
@@ -92,8 +94,10 @@ public class ListFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
+                if (mListener != null) {
+                    mListener.onCreateContactFab();
+                }
 
-                startActivityForResult(i, CREATE_CONTACT);
             }
         });
 
@@ -265,6 +269,20 @@ public class ListFragment extends Fragment {
         }
     }
 
+    public void updateEditList(Contacto contact){
+
+        int index = -1;
+        for (Contacto c : datos) {
+            if (c.getId() == (contact != null ? contact.getId() : -1)) {
+                index = datos.indexOf(c);
+            }
+        }
+        datos.remove(index);
+        datos.add(contact);
+        orderData(datos);
+        adaptador.notifyDataSetChanged();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
@@ -356,4 +374,44 @@ public class ListFragment extends Fragment {
         super.onResume();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnCreateContacListener) {
+            mListener = (OnCreateContacListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnCreateContacListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnCreateContacListener {
+        void onCreateContactFab();
+    }
+
+    public void updateCreateList(Contacto c) {
+        datos.add(c);
+        orderData(datos);
+        adaptador.notifyDataSetChanged();
+    }
+
+    public void deleteContactList(Contacto contacto){
+        int index = -1;
+        for (Contacto c : datos) {
+            if (c.getId() == (contacto != null ? contacto.getId() : -1)) {
+                index = datos.indexOf(c);
+            }
+        }
+        datos.remove(index);
+        adaptador.notifyDataSetChanged();
+//        CoordinatorLayout coord = (CoordinatorLayout) getView().findViewById(R.id.activity_main);
+        Snackbar.make(getView(), "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
+                .show();
+    }
 }

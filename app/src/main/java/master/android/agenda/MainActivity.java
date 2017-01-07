@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity implements ContactoAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements ContactoAdapter.OnItemClickListener, DetailFragment.OnEditContacListener, EditFragment.OnOkEditContactListener, CreateFragment.OnOkCreateContactListener, ListFragment.OnCreateContacListener, DetailFragment.OnDeleteContacListener {
     boolean mDualPane;
     boolean noContact;
 
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
 
         View detailsFrame = findViewById(R.id.details);
         mDualPane = detailsFrame != null;
-        if(!mDualPane){
+        if (!mDualPane) {
             if (savedInstanceState != null) {
                 return;
             }
@@ -31,9 +31,6 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
         }
 
 
-
-
-
     }
 
     @Override
@@ -41,31 +38,122 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
 
         View detailsFrame = findViewById(R.id.details);
         mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        DetailFragment fragment = DetailFragment.newInstance(c);
         if (mDualPane) {
             noContact = detailsFrame.getVisibility() == View.GONE;
             if (noContact) {
                 detailsFrame.setVisibility(View.VISIBLE);
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                DetailFragment fragment = DetailFragment.newInstance(c);
+
                 fragmentTransaction.add(R.id.details, fragment);
                 fragmentTransaction.commit();
             } else {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                DetailFragment fragment = DetailFragment.newInstance(c);
                 fragmentTransaction.replace(R.id.details, fragment);
                 fragmentTransaction.commit();
 
             }
-        }else{
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            DetailFragment fragment = DetailFragment.newInstance(c);
+        } else {
             fragmentTransaction.replace(R.id.container, fragment);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }
 
+    }
+
+
+    @Override
+    public void onEditContact(Contacto c) {
+        View detailsFrame = findViewById(R.id.details);
+        mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        EditFragment fragment = EditFragment.newInstance(c);
+        if (mDualPane) {
+            fragmentTransaction.replace(R.id.details, fragment);
+            fragmentTransaction.commit();
+        } else {
+            fragmentTransaction.replace(R.id.container, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
+
+    @Override
+    public void onOkEditContact(Contacto c) {
+        View detailsFrame = findViewById(R.id.details);
+        mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (mDualPane) {
+            ((ListFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.FrgListado)).updateEditList(c);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            DetailFragment fragment = DetailFragment.newInstance(c);
+            fragmentTransaction.replace(R.id.details, fragment);
+            fragmentTransaction.commit();
+        } else {
+            fragmentManager.popBackStack();
+        }
+    }
+
+    @Override
+    public void onOkCreateContact(Contacto c) {
+        View detailsFrame = findViewById(R.id.details);
+        mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (mDualPane) {
+            ((ListFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.FrgListado)).updateCreateList(c);
+
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            DetailFragment fragment = DetailFragment.newInstance(c);
+            fragmentTransaction.replace(R.id.details, fragment);
+            fragmentTransaction.commit();
+        } else {
+            fragmentManager.popBackStackImmediate();
+            ((ListFragment) fragmentManager.findFragmentById(R.id.container)).updateCreateList(c);
+        }
+    }
+
+    @Override
+    public void onCreateContactFab() {
+        View detailsFrame = findViewById(R.id.details);
+        mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        CreateFragment fragment = new CreateFragment();
+        if (mDualPane) {
+            noContact = detailsFrame.getVisibility() == View.GONE;
+            if (noContact) {
+                detailsFrame.setVisibility(View.VISIBLE);
+
+                fragmentTransaction.add(R.id.details, fragment);
+                fragmentTransaction.commit();
+            } else {
+                fragmentTransaction.replace(R.id.details, fragment);
+                fragmentTransaction.commit();
+            }
+        } else {
+            fragmentTransaction.replace(R.id.container, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
+
+    @Override
+    public void onDeleteContact(Contacto c) {
+        View detailsFrame = findViewById(R.id.details);
+        mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (mDualPane) {
+            ((ListFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.FrgListado)).deleteContactList(c);
+
+            fragmentManager.popBackStackImmediate();
+            detailsFrame.setVisibility(View.GONE);
+        } else {
+            fragmentManager.popBackStackImmediate();
+            ((ListFragment) fragmentManager.findFragmentById(R.id.container)).deleteContactList(c);
+        }
     }
 }
