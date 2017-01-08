@@ -1,7 +1,9 @@
 package master.android.agenda;
 
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -24,6 +26,10 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
         if (!mDualPane) {
             Fragment l = (fragmentManager.findFragmentById(R.id.container));
             if (savedInstanceState != null && l != null) {
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                ListFragment fragment = new ListFragment();
+                fragmentTransaction.replace(R.id.container, fragment);
+                fragmentTransaction.commit();
                 return;
             }
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -35,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
 
     }
 
+
     @Override
     public void onItemClick(Contacto c) {
 
@@ -45,10 +52,12 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
 
         if (mDualPane) {
             noContact = detailsFrame.getVisibility() == View.GONE;
+            fragmentManager.popBackStack();
             if (noContact) {
+
                 detailsFrame.setVisibility(View.VISIBLE);
                 DetailFragment fragment = DetailFragment.newInstance(c);
-                fragmentTransaction.add(R.id.details, fragment);
+                fragmentTransaction.replace(R.id.details, fragment);
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 fragmentTransaction.commit();
             } else {
@@ -77,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         if (mDualPane) {
+            fragmentManager.popBackStack();
             EditFragment fragment = EditFragment.newInstance(c);
             fragmentTransaction.replace(R.id.details, fragment);
             fragmentTransaction.commit();
@@ -101,7 +111,8 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
             fragmentTransaction.replace(R.id.details, fragment);
             fragmentTransaction.commit();
         } else {
-            fragmentManager.popBackStack();
+            fragmentManager.popBackStackImmediate();
+            ((DetailFragment) fragmentManager.findFragmentById(R.id.container)).updateEditContact(c);
         }
     }
 
@@ -133,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
 
         if (mDualPane) {
             noContact = detailsFrame.getVisibility() == View.GONE;
+            fragmentManager.popBackStack();
             if (noContact) {
                 detailsFrame.setVisibility(View.VISIBLE);
                 CreateFragment fragment = new CreateFragment();

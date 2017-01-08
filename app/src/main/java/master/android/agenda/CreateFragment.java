@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -31,6 +32,8 @@ public class CreateFragment extends Fragment {
     private EditText editTextCorreo;
     private EditText editTextDireccion;
     private Spinner spinnerTipo;
+    private Button btnCrear;
+    private Button btnCancelar;
 
     private OnOkCreateContactListener mListener;
 
@@ -56,26 +59,12 @@ public class CreateFragment extends Fragment {
         editTextCorreo = (EditText) v.findViewById(R.id.etCorreo);
         editTextDireccion = (EditText) v.findViewById(R.id.etDireccion);
 
-        ArrayAdapter<Tipo> adapter = new ArrayAdapter<Tipo>(getContext(), android.R.layout.simple_spinner_item, Tipo.values());
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
+        btnCrear = (Button) v.findViewById(R.id.btnEditar);
+        btnCancelar = (Button) v.findViewById(R.id.btnCancelar);
 
-        spinnerTipo.setAdapter(adapter);
-        return v;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_create, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_create:
+        btnCrear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem()), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), Utils.getMatColor("500", getContext()));
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
@@ -94,21 +83,24 @@ public class CreateFragment extends Fragment {
                         }
                     }).show();
                 }
+            }
+        });
 
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                return true;
-            case R.id.action_cancel:
-                return true;
+            }
+        });
 
+        ArrayAdapter<Tipo> adapter = new ArrayAdapter<Tipo>(getContext(), android.R.layout.simple_spinner_item, Tipo.values());
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
 
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
+        spinnerTipo.setAdapter(adapter);
+        return v;
     }
-
 
 
     @Override

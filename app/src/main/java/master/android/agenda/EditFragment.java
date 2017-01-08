@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -29,6 +30,8 @@ public class EditFragment extends Fragment {
     private EditText editTextDireccion;
     private Spinner spinnerTipo;
     private Contacto contacto;
+    private Button btnEditar;
+    private Button btnCancelar;
 
     private OnOkEditContactListener mListener;
 
@@ -56,6 +59,7 @@ public class EditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.fragment_edit, container, false);
         spinnerTipo = (Spinner) v.findViewById(R.id.spinnerEditTipo);
@@ -64,6 +68,41 @@ public class EditFragment extends Fragment {
         editTextTelefono = (EditText) v.findViewById(R.id.etEditTelefono);
         editTextCorreo = (EditText) v.findViewById(R.id.etEditCorreo);
         editTextDireccion = (EditText) v.findViewById(R.id.etEditDireccion);
+        btnEditar = (Button) v.findViewById(R.id.btnEditar);
+        btnCancelar = (Button) v.findViewById(R.id.btnCancelar);
+
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                contacto.setNombre(editTextNombre.getText().toString());
+                contacto.setApellidos(editTextApellidos.getText().toString());
+                contacto.setTelefono(new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem(), contacto.getTelefono().getId()));
+                contacto.setCorreo(editTextCorreo.getText().toString());
+                contacto.setDireccion(editTextDireccion.getText().toString());
+                String errors = validateContacto(contacto);
+                if (errors.isEmpty()) {
+                    DAOContentProvider dao = new DAOContentProvider(getContext());
+                    dao.updateContact(contacto);
+                    if (mListener != null) {
+                        mListener.onOkEditContact(contacto);
+                    }
+
+                } else {
+                    new AlertDialog.Builder(getContext()).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    }).show();
+                }
+            }
+        });
+
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
 
         contacto = getArguments().getParcelable("contacto");
@@ -87,53 +126,6 @@ public class EditFragment extends Fragment {
     }
 
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_create, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_create:
-                contacto.setNombre(editTextNombre.getText().toString());
-                contacto.setApellidos(editTextApellidos.getText().toString());
-                contacto.setTelefono(new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem(), contacto.getTelefono().getId()));
-                contacto.setCorreo(editTextCorreo.getText().toString());
-                contacto.setDireccion(editTextDireccion.getText().toString());
-                String errors = validateContacto(contacto);
-                if (errors.isEmpty()) {
-                    DAOContentProvider dao = new DAOContentProvider(getContext());
-                    dao.updateContact(contacto);
-                    if (mListener != null) {
-                        mListener.onOkEditContact(contacto);
-                    }
-                    return true;
-
-                } else {
-                    new AlertDialog.Builder(getContext()).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    }).show();
-                }
-
-
-                return true;
-            case R.id.action_cancel:
-
-                return true;
-
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
-    }
 
     public interface OnOkEditContactListener {
         void onOkEditContact(Contacto c);

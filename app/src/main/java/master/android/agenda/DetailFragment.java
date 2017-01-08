@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,6 +34,8 @@ public class DetailFragment extends Fragment {
     private TextView direccion;
     private Contacto contacto;
     private LinearLayout layout;
+    private Button btnEditar;
+    private Button btnEliminar;
 
     private OnEditContacListener mListener;
     private OnDeleteContacListener deleteListener;
@@ -50,16 +55,18 @@ public class DetailFragment extends Fragment {
         return f;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
+
+
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_detail, container, false);
         nombre = (TextView) v.findViewById(R.id.txtNombreApellidos);
@@ -68,39 +75,21 @@ public class DetailFragment extends Fragment {
         email = (TextView) v.findViewById(R.id.txtEmail);
         direccion = (TextView) v.findViewById(R.id.txtDireccion);
         layout = (LinearLayout) v.findViewById(R.id.layoutDetalle);
+        btnEditar = (Button) v.findViewById(R.id.btnEditar);
+        btnEliminar = (Button) v.findViewById(R.id.btnEliminar);
 
-        contacto = getArguments().getParcelable("contacto");
-
-        nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() : contacto.getNombre() + " " + contacto.getApellidos());
-        telefono.setText(contacto.getTelefono().getNumero());
-        tipo.setText(contacto.getTelefono().getTipo());
-        email.setText(contacto.getCorreo());
-        direccion.setText(contacto.getDireccion());
-        layout.setBackgroundColor(contacto.getColor());
-
-        return v;
-    }
-
-    public void mostrarDetalle(Contacto c) {
-        initializeData(c);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_detail, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_edit:
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 if (mListener != null) {
                     mListener.onEditContact(contacto);
                 }
-                return true;
-            case R.id.action_delete:
+            }
+        });
+
+        btnEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 AlertDialog alertbox = new AlertDialog.Builder(getActivity())
                         .setMessage("¿Está seguro de querer eliminar este contacto?")
                         .setPositiveButton("Si", new DialogInterface.OnClickListener() {
@@ -117,17 +106,24 @@ public class DetailFragment extends Fragment {
                             }
                         })
                         .show();
+            }
+        });
 
-                return true;
+        contacto = getArguments().getParcelable("contacto");
 
+        nombre.setText(contacto.getApellidos().isEmpty() ? contacto.getNombre() : contacto.getNombre() + " " + contacto.getApellidos());
+        telefono.setText(contacto.getTelefono().getNumero());
+        tipo.setText(contacto.getTelefono().getTipo());
+        email.setText(contacto.getCorreo());
+        direccion.setText(contacto.getDireccion());
+        layout.setBackgroundColor(contacto.getColor());
 
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
+        return v;
     }
+
+
+
+
 
     private void deleteContact(Contacto contacto) {
         DAOContentProvider dao = new DAOContentProvider(getActivity());
@@ -168,6 +164,10 @@ public class DetailFragment extends Fragment {
         super.onDetach();
         mListener = null;
         deleteListener = null;
+    }
+
+    public void updateEditContact(Contacto c) {
+        initializeData(c);
     }
 
     public interface OnEditContacListener {

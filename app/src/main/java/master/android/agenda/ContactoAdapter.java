@@ -28,9 +28,6 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
 
 
 
-
-    private static final int EDIT_CONTACT = 2;
-    private static final int DETAIL_CONTACT = 3;
     private ArrayList<Contacto> datos;
     private static Context context;
     private  OnItemClickListener listener;
@@ -90,72 +87,6 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
 
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(context);
-                LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View sheetView = li.inflate(R.layout.sheet_contacto, null);
-                mBottomSheetDialog.setContentView(sheetView);
-                mBottomSheetDialog.show();
-
-                LinearLayout edit = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_edit);
-                LinearLayout delete = (LinearLayout) sheetView.findViewById(R.id.fragment_history_bottom_sheet_delete);
-
-
-                edit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        Intent i = new Intent(context, EditActivity.class);
-                        i.putExtra("contacto", datos.get(pos));
-                        ((Activity) context).startActivityForResult(i, EDIT_CONTACT);
-                        mBottomSheetDialog.dismiss();
-                    }
-                });
-
-                delete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mBottomSheetDialog.dismiss();
-                        AlertDialog alertbox = new AlertDialog.Builder(context)
-                                .setMessage("¿Está seguro de querer eliminar este contacto?")
-                                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-
-                                    // do something when the button is clicked
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        deleteContact(datos.get(pos));
-
-                                    }
-                                })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    // do something when the button is clicked
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                    }
-                                })
-                                .show();
-                    }
-                });
-                return true;
-            }
-        });
-    }
-
-    private void deleteContact(Contacto contacto) {
-        DAOContentProvider dao = new DAOContentProvider(context);
-        if (dao.deleteContact(contacto)!=0) {
-            CoordinatorLayout coord = (CoordinatorLayout) ((Activity) context).findViewById(R.id.activity_main);
-            Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
-                    .show();
-            datos.remove(contacto);
-            notifyDataSetChanged();
-        } else {
-            new AlertDialog.Builder(context).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            }).show();
-        }
 
     }
 
