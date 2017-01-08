@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity implements ContactoAdapter.OnItemClickListener, DetailFragment.OnEditContacListener, EditFragment.OnOkEditContactListener, CreateFragment.OnOkCreateContactListener, ListFragment.OnCreateContacListener, DetailFragment.OnDeleteContacListener {
+public class MainActivity extends AppCompatActivity implements ContactoAdapter.OnItemClickListener, DetailFragment.OnEditContacListener, EditFragment.OnOkEditContactListener, CreateFragment.OnOkCreateContactListener, ListFragment.OnCreateContacListener, DetailFragment.OnDeleteContacListener, EditFragment.OnCancelEditContactListener ,CreateFragment.OnCancelCreateContactListener{
     boolean mDualPane;
     boolean noContact;
 
@@ -177,6 +177,34 @@ public class MainActivity extends AppCompatActivity implements ContactoAdapter.O
         } else {
             fragmentManager.popBackStackImmediate();
             ((ListFragment) fragmentManager.findFragmentById(R.id.container)).deleteContactList(c);
+        }
+    }
+
+    @Override
+    public void onCancelEditContact(Contacto c) {
+        View detailsFrame = findViewById(R.id.details);
+        mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (mDualPane) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            DetailFragment fragment = DetailFragment.newInstance(c);
+            fragmentTransaction.replace(R.id.details, fragment);
+            fragmentTransaction.commit();
+        } else {
+            fragmentManager.popBackStackImmediate();
+        }
+    }
+
+    @Override
+    public void onCancelCreateContact() {
+        View detailsFrame = findViewById(R.id.details);
+        mDualPane = detailsFrame != null;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (mDualPane) {
+            fragmentManager.popBackStackImmediate();
+            detailsFrame.setVisibility(View.GONE);
+        } else {
+            fragmentManager.popBackStackImmediate();
         }
     }
 }

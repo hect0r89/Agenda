@@ -34,6 +34,7 @@ public class EditFragment extends Fragment {
     private Button btnCancelar;
 
     private OnOkEditContactListener mListener;
+    private OnCancelEditContactListener cancelListener;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -100,7 +101,9 @@ public class EditFragment extends Fragment {
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (cancelListener != null) {
+                    cancelListener.onCancelEditContact(contacto);
+                }
             }
         });
 
@@ -126,9 +129,12 @@ public class EditFragment extends Fragment {
     }
 
 
-
     public interface OnOkEditContactListener {
         void onOkEditContact(Contacto c);
+    }
+
+    public interface OnCancelEditContactListener {
+        void onCancelEditContact(Contacto c);
     }
 
 //    // TODO: Rename method, update argument and hook method into UI event
@@ -147,12 +153,19 @@ public class EditFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnOkEditContactListener");
         }
+        if (context instanceof OnCancelEditContactListener) {
+            cancelListener = (OnCancelEditContactListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnCancelEditContactListener");
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        cancelListener = null;
     }
 
     /**

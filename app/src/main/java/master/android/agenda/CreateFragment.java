@@ -36,6 +36,7 @@ public class CreateFragment extends Fragment {
     private Button btnCancelar;
 
     private OnOkCreateContactListener mListener;
+    private OnCancelCreateContactListener cancelListener;
 
     public CreateFragment() {
         // Required empty public constructor
@@ -67,7 +68,7 @@ public class CreateFragment extends Fragment {
             public void onClick(View view) {
                 Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem()), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), Utils.getMatColor("500", getContext()));
                 String errors = validateContacto(contacto);
-                if(errors.isEmpty()){
+                if (errors.isEmpty()) {
                     DAOContentProvider dao = new DAOContentProvider(getContext());
                     ArrayList<Long> ids = dao.insertContact(contacto);
                     contacto.setId(ids.get(0));
@@ -76,7 +77,7 @@ public class CreateFragment extends Fragment {
                         mListener.onOkCreateContact(contacto);
                     }
 
-                }else{
+                } else {
                     new AlertDialog.Builder(getContext()).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
@@ -89,7 +90,9 @@ public class CreateFragment extends Fragment {
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (cancelListener != null) {
+                    cancelListener.onCancelCreateContact();
+                }
             }
         });
 
@@ -112,26 +115,29 @@ public class CreateFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnOkCreateContactListener");
         }
+        if (context instanceof OnCancelCreateContactListener) {
+            cancelListener = (OnCancelCreateContactListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnCancelCreateContactListener");
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        cancelListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnOkCreateContactListener {
-        // TODO: Update argument type and name
         void onOkCreateContact(Contacto c);
     }
+
+    public interface OnCancelCreateContactListener {
+        void onCancelCreateContact();
+    }
+
+
 }
