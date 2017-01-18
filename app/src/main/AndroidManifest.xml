@@ -3,8 +3,8 @@
     package="master.android.agenda">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.master.agendacontentprovider.READ_DATABASE"/>
-    <uses-permission android:name="com.master.agendacontentprovider.WRITE_DATABASE"/>
+    <uses-permission android:name="com.master.agendacontentprovider.READ_DATABASE" />
+    <uses-permission android:name="com.master.agendacontentprovider.WRITE_DATABASE" />
 
     <application
         android:allowBackup="true"
