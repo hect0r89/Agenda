@@ -1,6 +1,7 @@
 package master.android.agenda;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,10 @@ import com.google.gson.Gson;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static master.android.agenda.Utils.validateContacto;
 
 public class CreateActivity extends AppCompatActivity {
@@ -29,6 +34,7 @@ public class CreateActivity extends AppCompatActivity {
     private EditText editTextCorreo;
     private EditText editTextDireccion;
     private Spinner spinnerTipo;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +70,32 @@ public class CreateActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_create:
-                Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem()), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), Utils.getMatColor("500", this));
+
+                final Contacto contacto = new Contacto(editTextNombre.getText().toString(), editTextApellidos.getText().toString(), new Telefono(editTextTelefono.getText().toString(), (Tipo) spinnerTipo.getSelectedItem()), editTextCorreo.getText().toString(), editTextDireccion.getText().toString(), Utils.getMatColor("500", this));
                 String errors = validateContacto(contacto);
-                if(errors.isEmpty()){
-                    DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
-                    contacto.setId(dao.insertContact(contacto));
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("contacto", contacto);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
-                }else{
+                if (errors.isEmpty()) {
+                    dialog = ProgressDialog.show(CreateActivity.this, "", "Cargando...");
+                    final ServiceRetrofit contactService = ServiceRetrofit.retrofit.create(ServiceRetrofit.class);
+                    final Call<Contacto> call = contactService.postContact(contacto);
+                    call.enqueue(new Callback<Contacto>() {
+
+                        @Override
+                        public void onResponse(Call<Contacto> call, Response<Contacto> response) {
+                            Intent returnIntent = new Intent();
+                            returnIntent.putExtra("contacto", contacto);
+                            setResult(Activity.RESULT_OK, returnIntent);
+                            dialog.dismiss();
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Contacto> call, Throwable t) {
+                            dialog.dismiss();
+                        }
+                    });
+
+
+                } else {
                     new AlertDialog.Builder(this).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();

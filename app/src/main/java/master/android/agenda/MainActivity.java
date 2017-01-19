@@ -1,11 +1,13 @@
 package master.android.agenda;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +38,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 import static master.android.agenda.Utils.getMatColor;
 import static master.android.agenda.Utils.validateContacto;
@@ -49,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Contacto> datos;
     private ContactoAdapter adaptador;
     private DAOContentProvider dao;
+    private ProgressDialog dialog;
 
 
     @Override
@@ -56,17 +65,38 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dao = new DAOContentProvider(getApplicationContext());
-        datos = dao.getAllContacts();
-
-
+        final ServiceRetrofit contactService = ServiceRetrofit.retrofit.create(ServiceRetrofit.class);
+        datos = new ArrayList<>();
         recView = (RecyclerView) findViewById(R.id.RecView);
         recView.setHasFixedSize(true);
 
-        adaptador = new ContactoAdapter(orderData(datos), this);
+        adaptador = new ContactoAdapter(orderData(datos), MainActivity.this);
 
         recView.setAdapter(adaptador);
-        recView.setAdapter(adaptador);
+        recView.setLayoutManager(
+                new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
+        dialog = ProgressDialog.show(MainActivity.this, "", "Cargando...");
+
+        Call<ArrayList<Contacto>> call = contactService.getContacts();
+        call.enqueue(new Callback<ArrayList<Contacto>>() {
+
+
+            @Override
+            public void onResponse(Call<ArrayList<Contacto>> call, Response<ArrayList<Contacto>> response) {
+                datos.clear();
+                datos.addAll(response.body());
+                adaptador.notifyDataSetChanged();
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Contacto>> call, Throwable t) {
+                System.out.print("sd");
+                dialog.dismiss();
+
+            }
+
+        });
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -79,9 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(i, CREATE_CONTACT);
             }
         });
-
-        recView.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
 
     }
@@ -338,8 +365,30 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        orderData(datos);
-        adaptador.notifyDataSetChanged();
+        if (datos != null) {
+            orderData(datos);
+            adaptador.notifyDataSetChanged();
+        }
         super.onResume();
+    }
+
+    private class getContacts extends AsyncTask<ArrayList<List>, Void, Void> {
+
+
+        protected void onProgressUpdate(Integer... progress) {
+
+        }
+
+        @Override
+        protected Void doInBackground(ArrayList<List>... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            dialog.dismiss();
+        }
     }
 }

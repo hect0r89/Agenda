@@ -1,9 +1,12 @@
 package master.android.agenda;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -11,6 +14,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class DetailActivity extends AppCompatActivity {
@@ -23,6 +30,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView direccion;
     private Contacto contacto;
     private LinearLayout layout;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,21 +94,34 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void deleteContact(Contacto contacto) {
-        DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
-        if (dao.deleteContact(contacto) != 0) {
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("contacto", contacto);
-            setResult(Activity.RESULT_OK, returnIntent);
-            finish();
+    private void deleteContact(final Contacto contacto) {
 
-        } else {
-            new AlertDialog.Builder(this).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            }).show();
-        }
+        dialog = ProgressDialog.show(DetailActivity.this, "", "Cargando...");
+        final ServiceRetrofit contactService = ServiceRetrofit.retrofit.create(ServiceRetrofit.class);
+        final Call<Response<Void>> call = contactService.deleteContact(contacto.getId());
+        call.enqueue(new Callback<Response<Void>>() {
+
+            @Override
+            public void onResponse(Call<Response<Void>> call, Response<Response<Void>> response) {
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("contacto", contacto);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Response<Void>> call, Throwable t) {
+                new AlertDialog.Builder(getApplicationContext()).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).show();
+                dialog.dismiss();
+            }
+        });
+
 
     }
 

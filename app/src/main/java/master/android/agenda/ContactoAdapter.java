@@ -1,6 +1,7 @@
 package master.android.agenda;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,10 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by hector on 24/10/16.
  */
@@ -29,6 +34,7 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
     private static final int DETAIL_CONTACT = 3;
     private ArrayList<Contacto> datos;
     private static Context context;
+    private ProgressDialog dialog;
 
     public ContactoAdapter(ArrayList<Contacto> contactos, Context context) {
         this.datos = contactos;
@@ -135,21 +141,38 @@ public class ContactoAdapter extends RecyclerView.Adapter<ContactoAdapter.Contac
         });
     }
 
-    private void deleteContact(Contacto contacto) {
-        DAOContentProvider dao = new DAOContentProvider(context);
-        if (dao.deleteContact(contacto)!=0) {
-            CoordinatorLayout coord = (CoordinatorLayout) ((Activity) context).findViewById(R.id.activity_main);
-            Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
-                    .show();
-            datos.remove(contacto);
-            notifyDataSetChanged();
-        } else {
-            new AlertDialog.Builder(context).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            }).show();
-        }
+    private void deleteContact(final Contacto contacto) {
+
+        dialog = ProgressDialog.show(context, "", "Cargando...");
+        final ServiceRetrofit contactService = ServiceRetrofit.retrofit.create(ServiceRetrofit.class);
+        final Call<Response<Void>> call = contactService.deleteContact(contacto.getId());
+        call.enqueue(new Callback<Response<Void>>() {
+
+            @Override
+            public void onResponse(Call<Response<Void>> call, Response<Response<Void>> response) {
+                CoordinatorLayout coord = (CoordinatorLayout) ((Activity) context).findViewById(R.id.activity_main);
+                Snackbar.make(coord, "Contacto eliminado correctamente", Snackbar.LENGTH_LONG)
+                        .show();
+                datos.remove(contacto);
+                notifyDataSetChanged();
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Response<Void>> call, Throwable t) {
+                new AlertDialog.Builder(context).setTitle("Error").setMessage("Error al eliminar el contacto").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                }).show();
+                dialog.dismiss();
+            }
+        });
+
+
+
+
+
 
     }
 

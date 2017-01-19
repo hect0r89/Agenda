@@ -3,12 +3,19 @@ package master.android.agenda;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by hector on 24/10/16.
  */
 
 public enum Tipo implements Parcelable {
-    CASA("Casa"), TRABAJO("Trabajo"), MOVIL("Móvil");
+    @SerializedName("0")
+    CASA("Casa"),
+    @SerializedName("1")
+    TRABAJO("Trabajo"),
+    @SerializedName("2")
+    MOVIL("Móvil");
 
     private final String tipo;
 
