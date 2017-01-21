@@ -82,6 +82,7 @@ public class CreateActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<Contacto> call, Response<Contacto> response) {
                             Intent returnIntent = new Intent();
+                            contacto.setId(response.body().getId());
                             returnIntent.putExtra("contacto", contacto);
                             setResult(Activity.RESULT_OK, returnIntent);
                             dialog.dismiss();

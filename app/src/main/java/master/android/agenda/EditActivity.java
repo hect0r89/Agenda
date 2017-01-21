@@ -1,6 +1,7 @@
 package master.android.agenda;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,10 @@ import com.google.gson.Gson;
 
 import java.io.FileOutputStream;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static master.android.agenda.Utils.validateContacto;
 
 public class EditActivity extends AppCompatActivity {
@@ -29,6 +34,7 @@ public class EditActivity extends AppCompatActivity {
     private EditText editTextDireccion;
     private Spinner spinnerTipo;
     private Contacto contacto;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +85,25 @@ public class EditActivity extends AppCompatActivity {
                 contacto.setDireccion(editTextDireccion.getText().toString());
                 String errors = validateContacto(contacto);
                 if(errors.isEmpty()){
-                    DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
-                    dao.updateContact(contacto);
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("contacto", contacto);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    finish();
+                    dialog = ProgressDialog.show(EditActivity.this, "", "Cargando...");
+                    final ServiceRetrofit contactService = ServiceRetrofit.retrofit.create(ServiceRetrofit.class);
+                    final Call<Contacto> call = contactService.putContact(contacto.getId(), contacto);
+                    call.enqueue(new Callback<Contacto>() {
+
+                        @Override
+                        public void onResponse(Call<Contacto> call, Response<Contacto> response) {
+                            Intent returnIntent = new Intent();
+                            returnIntent.putExtra("contacto", contacto);
+                            setResult(Activity.RESULT_OK, returnIntent);
+                            dialog.dismiss();
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Contacto> call, Throwable t) {
+                            dialog.dismiss();
+                        }
+                    });
                 }else{
                     new AlertDialog.Builder(this).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
