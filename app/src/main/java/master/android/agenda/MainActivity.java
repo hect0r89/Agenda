@@ -1,5 +1,6 @@
 package master.android.agenda;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ArrayList<Contacto>> call, Response<ArrayList<Contacto>> response) {
                 datos.clear();
                 datos.addAll(response.body());
+                orderData(datos);
                 adaptador.notifyDataSetChanged();
                 dialog.dismiss();
             }
@@ -203,15 +205,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private ArrayList<Contacto> saveData(ArrayList<Contacto> datos) {
-        ArrayList<Contacto> datosNuevos = new ArrayList<>();
-        DAOContentProvider dao = new DAOContentProvider(getApplicationContext());
-        for (Contacto contacto : datos) {
+    private ArrayList<Contacto> saveData(ArrayList<Contacto> datosNuevos) {
+        ProgressDialog dialog;
+        dialog = ProgressDialog.show(MainActivity.this, "", "Cargando...");
+        for (final Contacto contacto : datosNuevos) {
+            final Contacto contact = contacto;
             String errors = validateContacto(contacto);
             if (errors.isEmpty()) {
-                long id = dao.insertContact(contacto);
-                contacto.setId(id);
-                datosNuevos.add(contacto);
+
+
+                final ServiceRetrofit contactService = ServiceRetrofit.retrofit.create(ServiceRetrofit.class);
+                final Call<Contacto> call = contactService.postContact(contacto);
+                call.enqueue(new Callback<Contacto>() {
+
+                    @Override
+                    public void onResponse(Call<Contacto> call, Response<Contacto> response) {
+                        contact.setId(response.body().getId());
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Contacto> call, Throwable t) {
+
+                    }
+                });
+
+
             } else {
                 new AlertDialog.Builder(this).setTitle("Error").setMessage(errors).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -220,6 +239,10 @@ public class MainActivity extends AppCompatActivity {
                 }).show();
             }
         }
+        dialog.dismiss();
+        datos.addAll(datosNuevos);
+        orderData(datos);
+        adaptador.notifyDataSetChanged();
         return datosNuevos;
     }
 
@@ -348,15 +371,14 @@ public class MainActivity extends AppCompatActivity {
         datos.clear();
         ArrayList<Contacto> dataGenerated = new ArrayList<>();
         String[] nombres = {"Luis", "María", "Juan", "Norberto", "Laura", "Pelayo", "Jose", "Juana", "Julia", "Irene", "Julia", "Yasen", "Roman", "Alan", "Ivan", "Javi", "Alberto", "Cristina", "Miguel", "David", "Liang", "Omar", "Nacho", "Manuel", "Alejandro", "Daniel", "Jorge"};
-        String[] apellidos = {"De Diego", "Martín", "Antón", "Clavo", "Alonso", "Díaz", "Crespo", "Fernandez", "Torres", "De Murcia", "Rodriguez", "Gomez", "Amo", "Sousa", "Ibarra", "De Andres", "Diaz", "Roldan", "Del Mar", "Amor", "Shu", "Rios", "Palacios", "Casariego", "Nicolas", "Hernandez", "Valle"};
+        String[] apellidos = {"De Diego", "Martín", "Antón", "Clavo", "Alonso", "Díaz", "Crespo", "Fernandez", "Torres", "De Murcia", "Rodriguez", "Gomez", "Amo", "Sousa", "Ibarra", "De Andres", "Diaz", "Roldan", "Del Mar", "Perez", "Shu", "Rios", "Palacios", "Casariego", "Nicolas", "Hernandez", "Valle"};
         for (int i = 0; i < 30; i++) {
             String nombre = nombres[(int) (Math.random() * (26 - 0 + 1) + 0)];
             String apellido = apellidos[(int) (Math.random() * (26 - 0 + 1) + 0)];
             dataGenerated.add(new Contacto(nombre, apellido, new Telefono(generaTelefonos(), Tipo.MOVIL), "", "", getMatColor("500", this)));
         }
-        datos.addAll(saveData(dataGenerated));
-        orderData(datos);
-        adaptador.notifyDataSetChanged();
+        saveData(dataGenerated);
+
     }
 
     private String generaTelefonos() {
